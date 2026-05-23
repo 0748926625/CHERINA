@@ -5824,31 +5824,26 @@ function donOpenWave() {
   const hint = document.getElementById('don-wave-hint');
   const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  // Copier le numéro automatiquement — l'utilisateur peut le coller dans Wave
-  donCopyNum(null);
+  // Copier "500" dans le presse-papier — l'utilisateur peut le coller dans le champ montant
+  _donCopyText(DON_AMOUNT, hint, '✅ Montant 500 copié — collez dans Wave !');
 
   if (isIOS) {
     window.open('https://apps.apple.com/sn/app/wave-mobile-money/id1523884528', '_blank');
-  } else {
-    // Android : cibler l'activité principale de Wave via MAIN+LAUNCHER
-    // → fonctionne même si Wave ne déclare aucun URL scheme
-    const store = encodeURIComponent('https://play.google.com/store/apps/details?id=com.wave.personal');
-    const a = document.createElement('a');
-    a.href = 'intent://open#Intent'
-           + ';action=android.intent.action.MAIN'
-           + ';category=android.intent.category.LAUNCHER'
-           + ';package=com.wave.personal'
-           + ';S.browser_fallback_url=' + store
-           + ';end';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => a.remove(), 300);
+    return;
   }
 
-  if (hint) {
-    hint.textContent = '📋 Numéro copié — collez-le dans Wave > Envoyer';
-    setTimeout(() => { hint.textContent = 'Toucher pour ouvrir Wave'; }, 4000);
-  }
+  // Android : intent SANS S.browser_fallback_url
+  // → si Wave est installé : s'ouvre directement, SANS passer par le Play Store
+  // → si Wave absent   : rien ne se passe (pas de redirection store)
+  const a = document.createElement('a');
+  a.href = 'intent://open#Intent'
+         + ';action=android.intent.action.MAIN'
+         + ';category=android.intent.category.LAUNCHER'
+         + ';package=com.wave.personal'
+         + ';end';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => a.remove(), 200);
 }
 
 function donOpenOrange() {
@@ -5861,20 +5856,22 @@ function donOpenOrange() {
 }
 
 function donCopyNum(hint) {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(DON_PHONE).then(() => {
-      if (hint) { hint.textContent = '✅ Numéro copié !'; setTimeout(() => { hint.textContent = 'Toucher pour ouvrir'; }, 2500); }
-    }).catch(() => _donFallbackCopy(hint));
-  } else { _donFallbackCopy(hint); }
+  _donCopyText(DON_PHONE, hint, '✅ Numéro copié !');
 }
-function _donFallbackCopy(hint) {
+function _donCopyText(text, hint, msg) {
+  const reset = hint ? hint.textContent : '';
+  const show  = h => { if (h) { h.textContent = msg; setTimeout(() => { h.textContent = reset; }, 2800); } };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => show(hint)).catch(() => _donExecCopy(text, hint, msg, reset));
+  } else { _donExecCopy(text, hint, msg, reset); }
+}
+function _donExecCopy(text, hint, msg, reset) {
   const ta = document.createElement('textarea');
-  ta.value = DON_PHONE; ta.style.cssText = 'position:fixed;opacity:0';
+  ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
   document.body.appendChild(ta); ta.select();
-  try { document.execCommand('copy'); }
+  try { document.execCommand('copy'); if (hint) { hint.textContent = msg; setTimeout(() => { hint.textContent = reset; }, 2800); } }
   catch(e) {}
   document.body.removeChild(ta);
-  if (hint) { hint.textContent = '✅ Numéro copié !'; setTimeout(() => { hint.textContent = 'Toucher pour ouvrir'; }, 2500); }
 }
 </script>
 
