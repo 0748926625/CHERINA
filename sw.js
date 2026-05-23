@@ -1,4 +1,4 @@
-const CACHE = 'cherina-v3';
+const CACHE = 'cherina-v4';
 
 const ASSETS = [
   './index.html',
@@ -16,6 +16,8 @@ const ASSETS = [
   './ANIMAUX/Boeuf.png',
   './ANIMAUX/singe.png',
   './ANIMAUX/chameau.png',
+  './ANIMAUX/lapin.png',
+  './ANIMAUX/oiseau.png',
 ];
 
 self.addEventListener('install', e => {

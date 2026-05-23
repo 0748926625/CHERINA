@@ -154,6 +154,7 @@ body {
 #home {
   background: radial-gradient(ellipse at top, #7C3AED 0%, #4F46E5 50%, #3730A3 100%);
   justify-content: flex-start;
+  align-items: center;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -730,6 +731,86 @@ body {
   margin-top: 14px;
 }
 
+/* ===== VERROU PARENTAL ===== */
+.btn-lock-home {
+  position: absolute;
+  top: max(env(safe-area-inset-top, 0px), 10px);
+  left: clamp(12px, 3.5vw, 20px);
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 50%;
+  width: clamp(42px, 11vw, 52px);
+  height: clamp(42px, 11vw, 52px);
+  font-size: clamp(1.2rem, 4.5vw, 1.5rem);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  z-index: 20;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  transition: transform .12s, background .2s;
+}
+.btn-lock-home:active { transform: scale(0.88); }
+.btn-lock-home.locked { background: rgba(255,155,0,0.45); }
+
+#lock-floating {
+  position: fixed;
+  top: max(env(safe-area-inset-top, 0px), 8px);
+  left: 10px;
+  width: clamp(34px, 9vw, 42px);
+  height: clamp(34px, 9vw, 42px);
+  font-size: 1.1rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255,155,0,0.38);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#lock-floating.visible { opacity: 1; pointer-events: auto; }
+
+@keyframes lockHoldPulse {
+  0%   { box-shadow: 0 0 0 0   rgba(255,200,0,0.7); }
+  100% { box-shadow: 0 0 0 18px rgba(255,200,0,0); background: rgba(80,200,80,0.6); }
+}
+#lock-floating.holding { animation: lockHoldPulse 3s linear forwards; }
+
+/* Quand verrouillé : masquer la navigation */
+body.game-locked .btn-home,
+body.game-locked .cg-back-btn { visibility: hidden !important; }
+body.game-locked .tab-bar     { pointer-events: none !important; opacity: 0.6; }
+
+/* ===== BOUTON MUTE GLOBAL ===== */
+.btn-mute-global {
+  position: absolute;
+  top: max(env(safe-area-inset-top, 0px), 10px);
+  right: clamp(12px, 3.5vw, 20px);
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 50%;
+  width: clamp(42px, 11vw, 52px);
+  height: clamp(42px, 11vw, 52px);
+  font-size: clamp(1.2rem, 4.5vw, 1.5rem);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  z-index: 20;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  transition: transform .12s, background .2s;
+}
+.btn-mute-global:active { transform: scale(0.88); }
+.btn-mute-global.muted { background: rgba(255,80,80,0.35); }
+
 /* ===== TABS (home) ===== */
 .tab-bar {
   display: flex;
@@ -739,6 +820,8 @@ body {
   padding: 4px;
   width: min(400px, 94vw);
   flex-shrink: 0;
+  margin: 0 auto;
+  justify-content: center;
 }
 
 .tab-btn {
@@ -1103,8 +1186,9 @@ body {
 }
 
 #bg-svg {
-  height: min(74vh, 78vw);
+  height: min(84vh, calc(90vw * 459 / 200));
   width: auto;
+  max-width: 90vw;
   cursor: pointer;
   touch-action: manipulation;
   filter: drop-shadow(0 10px 26px rgba(0,0,0,0.22));
@@ -1147,12 +1231,6 @@ body {
 #bg-mouth-g.bg-open #bg-mouth-closed { opacity: 0; }
 #bg-mouth-g.bg-open #bg-mouth-open   { opacity: 1; }
 
-.bg-lid { transform-box: fill-box; transform-origin: 50% 0%; }
-@keyframes bg-blink-anim {
-  0%,100% { transform: scaleY(1); }
-  50%     { transform: scaleY(2.4); }
-}
-#bg-lids-g.bg-blink .bg-lid { animation: bg-blink-anim 0.35s ease-in-out forwards; }
 
 @keyframes bg-twitch-anim {
   0%,100% { transform: scale(1); }
@@ -1223,6 +1301,8 @@ body {
   66%     { transform: scaleY(1.06); }
 }
 #bg-leg-left-g.bg-kick, #bg-leg-right-g.bg-kick { transform-box:fill-box; transform-origin:50% 0%; animation:bg-kick-anim 0.55s ease both; }
+#bg-thigh-left-g.bg-bounce, #bg-thigh-right-g.bg-bounce { transform-box:fill-box; transform-origin:50% 50%; animation:bg-bounce-anim 0.55s ease both; }
+#bg-knee-left-g.bg-kick, #bg-knee-right-g.bg-kick { transform-box:fill-box; transform-origin:50% 50%; animation:bg-kick-anim 0.55s ease both; }
 
 @keyframes bg-puff-anim {
   0%,100% { transform: scale(1); }
@@ -1230,6 +1310,23 @@ body {
   70%     { transform: scaleX(0.97) scaleY(0.97); }
 }
 #bg-torso-g.bg-puff { transform-box:fill-box; transform-origin:50% 30%; animation:bg-puff-anim 0.8s ease both; }
+
+.bg-bravo-flash {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: clamp(2.2rem, 12vw, 4rem);
+  font-weight: 900; font-family: 'Nunito', sans-serif;
+  color: #fff; text-shadow: 0 3px 18px rgba(0,0,0,0.5);
+  pointer-events: none; z-index: 10; white-space: nowrap;
+  animation: bgBravoAnim 1.4s cubic-bezier(0.34,1.4,0.64,1) forwards;
+}
+@keyframes bgBravoAnim {
+  0%   { transform: translate(-50%,-50%) scale(0);    opacity: 0; }
+  30%  { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
+  70%  { transform: translate(-50%,-50%) scale(1);    opacity: 1; }
+  100% { transform: translate(-50%,-50%) scale(0.8);  opacity: 0; }
+}
+#bg-svg { transition: all 0.35s cubic-bezier(0.34,1.2,0.64,1); }
 
 /* ===== JEU DU CHAT ===== */
 #cat-game-overlay {
@@ -1516,6 +1613,164 @@ body {
   transition: background 0.15s;
 }
 #pwa-install-close:active { background: rgba(255,255,255,0.45); }
+
+/* ===== COULEURS CARTES EXTRA ===== */
+.card-corps    { background: linear-gradient(130deg, #F471B5, #BE185D); }
+
+/* ===== OVERLAYS FORMES / COMPARAISONS / ASSOCIATION ===== */
+#shapes-overlay, #compare-overlay, #match-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 300;
+  padding: clamp(10px,2.5vh,14px) 10px clamp(14px,3vh,20px);
+  gap: clamp(10px,2.5vh,16px);
+  overflow: hidden;
+}
+#shapes-overlay.active, #compare-overlay.active, #match-overlay.active { display: flex; }
+#shapes-overlay, #compare-overlay { background: linear-gradient(160deg,#1a1060,#3b1fa8); }
+#match-overlay  { background: linear-gradient(160deg,#0f2027,#203a43,#2c5364); }
+
+.fo-back-btn {
+  position: absolute;
+  top: clamp(10px,2vh,18px);
+  left: clamp(10px,2.5vw,18px);
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  transition: background .15s;
+  touch-action: manipulation;
+}
+.fo-back-btn:active { background: rgba(255,255,255,0.3); }
+
+.fo-title {
+  font-size: clamp(1rem,4vw,1.3rem);
+  color: #fff;
+  font-weight: 800;
+  text-align: center;
+  margin-top: 10px;
+  letter-spacing: .5px;
+}
+.fo-instr {
+  font-size: clamp(1.05rem,4.5vw,1.4rem);
+  color: #ffe066;
+  font-weight: 800;
+  text-align: center;
+  min-height: 2em;
+  padding: 0 10px;
+}
+.fo-score {
+  font-size: clamp(0.9rem,3.5vw,1rem);
+  color: rgba(255,255,255,0.75);
+  font-weight: 700;
+}
+
+/* Grille formes */
+.shapes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(10px,3vw,18px);
+  width: 100%;
+  max-width: 360px;
+  margin: auto 0;
+}
+.shape-card {
+  background: rgba(255,255,255,0.12);
+  border: 3px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  cursor: pointer;
+  transition: transform .12s, background .12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.shape-card:active { transform: scale(0.93); background: rgba(255,255,255,0.25); }
+.shape-card svg { width: 62%; height: 62%; }
+
+/* Paires comparaisons */
+.compare-pair {
+  display: flex;
+  gap: clamp(16px,6vw,40px);
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  width: 100%;
+  max-width: 400px;
+}
+.compare-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  flex: 1;
+  background: rgba(255,255,255,0.10);
+  border: 3px solid rgba(255,255,255,0.22);
+  border-radius: 22px;
+  padding: 14px 8px;
+  min-height: 160px;
+  transition: transform .12s, background .12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.compare-item:active { transform: scale(0.93); }
+.compare-item img { display: block; }
+
+/* Grille association */
+.match-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(8px,2.5vw,14px);
+  width: 100%;
+  max-width: 360px;
+  margin: auto 0;
+}
+.match-card {
+  background: rgba(255,255,255,0.13);
+  border: 3px solid rgba(255,255,255,0.2);
+  border-radius: 18px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .12s, border-color .15s, box-shadow .15s;
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+}
+.match-card img { width: 72%; height: 72%; object-fit: contain; display: block; }
+.match-card svg { width: 62%; height: 62%; }
+.match-card.selected {
+  border-color: #FFD60A;
+  box-shadow: 0 0 0 3px #FFD60A88;
+  transform: scale(1.08);
+}
+.match-card.matched-ok {
+  animation: matchPop .55s ease forwards;
+  pointer-events: none;
+}
+@keyframes matchPop {
+  0%   { transform: scale(1.08); opacity: 1; border-color: #30D158; box-shadow: 0 0 18px #30D15888; }
+  40%  { transform: scale(1.22); opacity: 1; }
+  100% { transform: scale(0);    opacity: 0; }
+}
+.match-card.wrong-flash {
+  border-color: #FF3B30;
+  box-shadow: 0 0 12px #FF3B3088;
+  animation: wrongShake .45s ease both;
+}
 </style>
 </head>
 <body>
@@ -1535,6 +1790,8 @@ body {
 <div id="home" class="screen">
   <div class="home-bg-balloons" id="home-bg"></div>
   <div id="piano-arena"></div>
+  <button class="btn-mute-global" id="btn-mute-global" onclick="toggleGlobalMusic()" title="Couper / relancer la musique">🔊</button>
+  <button class="btn-lock-home" id="btn-lock-home" onclick="quickLock()" title="Verrouiller le jeu">🔓</button>
 
   <div class="home-logo">🎈</div>
   <h1 class="home-title">Chérina apprend !</h1>
@@ -1545,6 +1802,8 @@ body {
     <button class="tab-btn"        data-tab="numbers" onclick="switchTab(this)">🔢 Chiffres</button>
     <button class="tab-btn"        data-tab="animals" onclick="switchTab(this)">🦁 Zoo</button>
     <button class="tab-btn"        data-tab="piano"   onclick="switchTab(this)">🎹 Piano</button>
+    <button class="tab-btn"        data-tab="formes"  onclick="switchTab(this)">🔷 Formes</button>
+    <button class="tab-btn"        data-tab="corps"   onclick="switchTab(this)">🧍 Corps</button>
   </div>
 
   <!-- Couleurs -->
@@ -1603,10 +1862,6 @@ body {
         <span class="pmb-icon">🐱</span>
         <span class="pmb-label">Jeu du chat</span>
       </button>
-      <button class="piano-menu-btn body-btn" onclick="selectPianoMode('body')">
-        <span class="pmb-icon">👦</span>
-        <span class="pmb-label">Jeu du corps</span>
-      </button>
     </div>
     <!-- Mode feu (jeu existant) -->
     <div id="piano-fire-mode" class="piano-container" style="display:none">
@@ -1614,6 +1869,42 @@ body {
       <p class="piano-subtitle">Touche la bonne touche pour détruire le chiffre ! 💥</p>
       <div class="piano-keys" id="piano-keys"></div>
     </div>
+  </div>
+
+  <!-- Formes -->
+  <div id="tab-formes" class="tab-panel">
+    <button class="card card-7" onclick="startShapesGame()">
+      <span class="card-icon">🔷</span>
+      <div>
+        <div class="card-title">Formes — Reconnais !</div>
+        <div class="card-desc">Cercle, carré, triangle…</div>
+      </div>
+    </button>
+    <button class="card card-8" onclick="startCompareGame()">
+      <span class="card-icon">⚖️</span>
+      <div>
+        <div class="card-title">Comparaisons</div>
+        <div class="card-desc">Grand / Petit</div>
+      </div>
+    </button>
+    <button class="card card-3" onclick="startMatchGame()">
+      <span class="card-icon">🔗</span>
+      <div>
+        <div class="card-title">Associations</div>
+        <div class="card-desc">Trouve les deux pareils !</div>
+      </div>
+    </button>
+  </div>
+
+  <!-- Corps -->
+  <div id="tab-corps" class="tab-panel">
+    <button class="card card-corps" onclick="startBodyGame()">
+      <span class="card-icon">🧍</span>
+      <div>
+        <div class="card-title">Corps humain</div>
+        <div class="card-desc">Découvrir les parties du corps</div>
+      </div>
+    </button>
   </div>
 
   <!-- Chiffres -->
@@ -1695,181 +1986,266 @@ body {
   <div id="cg-sort-area" class="cg-sort-area"></div>
 </div>
 
+<!-- ======================== JEU ASSOCIATION ======================== -->
+<div id="match-overlay">
+  <button class="fo-back-btn" onclick="stopMatchGame()">🏠</button>
+  <div class="fo-title">🔗 Associations</div>
+  <div class="fo-instr" id="match-instr">…</div>
+  <div class="fo-score" id="match-score">⭐ 0</div>
+  <div class="match-grid" id="match-grid"></div>
+</div>
+
+<!-- ======================== JEU FORMES ======================== -->
+<div id="shapes-overlay">
+  <button class="fo-back-btn" onclick="stopShapesGame()">🏠</button>
+  <div class="fo-title">🔷 Reconnais la forme !</div>
+  <div class="fo-instr" id="fo-instr">…</div>
+  <div class="fo-score" id="fo-score">⭐ 0</div>
+  <div class="shapes-grid" id="shapes-grid"></div>
+</div>
+
+<!-- ======================== JEU COMPARAISONS ======================== -->
+<div id="compare-overlay">
+  <button class="fo-back-btn" onclick="stopCompareGame()">🏠</button>
+  <div class="fo-title">⚖️ Comparaisons</div>
+  <div class="fo-instr" id="cmp-instr">…</div>
+  <div class="fo-score" id="cmp-score">⭐ 0</div>
+  <div class="compare-pair" id="compare-pair"></div>
+</div>
+
 <!-- ======================== JEU DU CORPS ======================== -->
 <div id="body-game-overlay">
-  <button class="cg-back-btn" onclick="stopBodyGame(); showPianoMenu();">🏠</button>
+  <button class="cg-back-btn" onclick="stopBodyGame(); goToCorpsTab();">🏠</button>
   <div id="bg-title" class="bg-title"></div>
   <div id="bg-figure-wrap" class="bg-figure-wrap">
-    <svg id="bg-svg" viewBox="0 0 200 445" xmlns="http://www.w3.org/2000/svg">
+    <svg id="bg-svg" viewBox="0 -14 200 459" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <radialGradient id="bgSkin" cx="42%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stop-color="#A86235"/>
-          <stop offset="55%" stop-color="#8C4A20"/>
-          <stop offset="100%" stop-color="#6B3415"/>
+        <radialGradient id="bgSkin" cx="38%" cy="28%" r="65%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stop-color="#D4895A"/>
+          <stop offset="45%"  stop-color="#B5682E"/>
+          <stop offset="100%" stop-color="#8C4518"/>
         </radialGradient>
-        <radialGradient id="bgSkinDark" cx="50%" cy="50%" r="60%">
-          <stop offset="0%" stop-color="#7A4020"/>
-          <stop offset="100%" stop-color="#5C2E10"/>
+        <radialGradient id="bgSkinArm" cx="50%" cy="30%" r="65%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stop-color="#C07838"/>
+          <stop offset="100%" stop-color="#8C4518"/>
+        </radialGradient>
+        <linearGradient id="bgTop" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"   stop-color="#FF8050"/>
+          <stop offset="100%" stop-color="#E84A1A"/>
+        </linearGradient>
+        <linearGradient id="bgPants" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"   stop-color="#2E6BE0"/>
+          <stop offset="100%" stop-color="#1A3A8A"/>
+        </linearGradient>
+        <radialGradient id="bgHair" cx="42%" cy="35%" r="65%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stop-color="#1E0A02"/>
+          <stop offset="100%" stop-color="#050100"/>
         </radialGradient>
       </defs>
 
-      <!-- ══ TÊTE (groupe animé pour hochement) ══ -->
+      <!-- ══ OMBRE AU SOL ══ -->
+      <ellipse cx="100" cy="438" rx="70" ry="7" fill="rgba(60,120,40,0.28)"/>
+
+      <!-- ══ PIEDS (vue de face — orteils vers le bas, légèrement en canard) ══ -->
+      <g id="bg-feet-g">
+
+        <!-- ── Pied gauche (rotation +40° vers l'extérieur, pivot cheville) ── -->
+        <g transform="rotate(40, 75, 403)">
+          <ellipse cx="71" cy="417" rx="14" ry="18" fill="url(#bgSkinArm)"/>
+          <ellipse cx="71" cy="429" rx="16" ry="9"  fill="#A85C20"/>
+          <ellipse cx="75" cy="403" rx="8"  ry="5"  fill="#B86828"/>
+          <ellipse cx="70" cy="411" rx="7"  ry="4"  fill="rgba(210,130,60,0.32)"/>
+          <ellipse cx="79" cy="434" rx="4.5" ry="6.5" fill="#9C5018"/>
+          <ellipse cx="74" cy="436" rx="4"   ry="6"   fill="#A85C20"/>
+          <ellipse cx="69" cy="437" rx="3.7" ry="5.7" fill="#A85C20"/>
+          <ellipse cx="64" cy="436" rx="3.3" ry="5.2" fill="#9C5018"/>
+          <ellipse cx="59" cy="433" rx="2.8" ry="4.5" fill="#8C4018"/>
+          <ellipse cx="79" cy="430" rx="3.2" ry="1.6" fill="rgba(240,205,165,0.6)"/>
+          <ellipse cx="74" cy="432" rx="2.8" ry="1.4" fill="rgba(240,205,165,0.6)"/>
+          <ellipse cx="69" cy="433" rx="2.5" ry="1.3" fill="rgba(240,205,165,0.55)"/>
+          <ellipse cx="64" cy="432" rx="2.1" ry="1.2" fill="rgba(240,205,165,0.5)"/>
+          <ellipse cx="59" cy="430" rx="1.8" ry="1"   fill="rgba(240,205,165,0.5)"/>
+        </g>
+
+        <!-- ── Pied droit (rotation -40° vers l'extérieur, pivot cheville) ── -->
+        <g transform="rotate(-40, 125, 403)">
+          <ellipse cx="129" cy="417" rx="14" ry="18" fill="url(#bgSkinArm)"/>
+          <ellipse cx="129" cy="429" rx="16" ry="9"  fill="#A85C20"/>
+          <ellipse cx="125" cy="403" rx="8"  ry="5"  fill="#B86828"/>
+          <ellipse cx="130" cy="411" rx="7"  ry="4"  fill="rgba(210,130,60,0.32)"/>
+          <ellipse cx="121" cy="434" rx="4.5" ry="6.5" fill="#9C5018"/>
+          <ellipse cx="126" cy="436" rx="4"   ry="6"   fill="#A85C20"/>
+          <ellipse cx="131" cy="437" rx="3.7" ry="5.7" fill="#A85C20"/>
+          <ellipse cx="136" cy="436" rx="3.3" ry="5.2" fill="#9C5018"/>
+          <ellipse cx="141" cy="433" rx="2.8" ry="4.5" fill="#8C4018"/>
+          <ellipse cx="121" cy="430" rx="3.2" ry="1.6" fill="rgba(240,205,165,0.6)"/>
+          <ellipse cx="126" cy="432" rx="2.8" ry="1.4" fill="rgba(240,205,165,0.6)"/>
+          <ellipse cx="131" cy="433" rx="2.5" ry="1.3" fill="rgba(240,205,165,0.55)"/>
+          <ellipse cx="136" cy="432" rx="2.1" ry="1.2" fill="rgba(240,205,165,0.5)"/>
+          <ellipse cx="141" cy="430" rx="1.8" ry="1"   fill="rgba(240,205,165,0.5)"/>
+        </g>
+
+      </g>
+
+      <!-- ══ JAMBES : cuisse + genou + tibia ══ -->
+      <g id="bg-leg-left-g">
+        <!-- Cuisse -->
+        <g id="bg-thigh-left-g">
+          <rect x="56" y="258" width="38" height="64" rx="14" fill="#2E6BE0"/>
+          <path d="M87,260 L87,318" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" fill="none"/>
+        </g>
+        <!-- Genou -->
+        <g id="bg-knee-left-g">
+          <ellipse cx="75" cy="322" rx="22" ry="12" fill="#4A84FF"/>
+          <ellipse cx="75" cy="319" rx="13" ry="7"  fill="rgba(255,255,255,0.22)"/>
+        </g>
+        <!-- Tibia (bas de jambe) -->
+        <rect x="59" y="330" width="32" height="72" rx="11" fill="#1A3A8A"/>
+        <path d="M84,332 L84,399" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" fill="none"/>
+      </g>
+      <g id="bg-leg-right-g">
+        <!-- Cuisse -->
+        <g id="bg-thigh-right-g">
+          <rect x="106" y="258" width="38" height="64" rx="14" fill="#2E6BE0"/>
+          <path d="M113,260 L113,318" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" fill="none"/>
+        </g>
+        <!-- Genou -->
+        <g id="bg-knee-right-g">
+          <ellipse cx="125" cy="322" rx="22" ry="12" fill="#4A84FF"/>
+          <ellipse cx="125" cy="319" rx="13" ry="7"  fill="rgba(255,255,255,0.22)"/>
+        </g>
+        <!-- Tibia (bas de jambe) -->
+        <rect x="109" y="330" width="32" height="72" rx="11" fill="#1A3A8A"/>
+        <path d="M116,332 L116,399" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" fill="none"/>
+      </g>
+
+      <!-- ══ CEINTURE ══ -->
+      <rect x="50"  y="248" width="100" height="16" rx="6" fill="#1A237E"/>
+      <rect x="92"  y="248" width="16"  height="16" rx="4" fill="#F5A623"/>
+      <rect x="96"  y="252" width="8"   height="8"  rx="2" fill="#D88800"/>
+
+      <!-- ══ BRAS ══ -->
+      <g id="bg-arm-left-g">
+        <rect x="14"  y="140" width="38" height="84" rx="19" fill="url(#bgTop)"/>
+      </g>
+      <g id="bg-arm-right-g">
+        <rect x="148" y="140" width="38" height="84" rx="19" fill="url(#bgTop)"/>
+      </g>
+
+      <!-- ══ TORSE ══ -->
+      <g id="bg-torso-g">
+        <rect x="48"  y="138" width="104" height="114" rx="22" fill="url(#bgTop)"/>
+        <path d="M88,140 Q100,157 112,140" stroke="rgba(180,40,0,0.55)" stroke-width="3" fill="none"/>
+        <path d="M48,176 Q100,181 152,176" stroke="rgba(255,255,255,0.2)"  stroke-width="7"  fill="none" stroke-linecap="round"/>
+        <path d="M48,189 Q100,194 152,189" stroke="rgba(255,255,255,0.13)" stroke-width="4"  fill="none" stroke-linecap="round"/>
+        <path d="M78,158 L80.9,167 L90,167 L82.8,172.2 L85.6,181.2 L78,176 L70.4,181.2 L73.2,172.2 L66,167 L75.1,167 Z" fill="rgba(255,225,0,0.92)"/>
+        <ellipse cx="100" cy="236" rx="4" ry="3" fill="rgba(0,0,0,0.14)"/>
+      </g>
+
+      <!-- ══ MAINS ══ -->
+      <g id="bg-hand-left-g">
+        <circle cx="33" cy="224" r="18" fill="url(#bgSkinArm)"/>
+        <ellipse cx="18" cy="239" rx="5"   ry="9"   fill="#A85C20"/>
+        <ellipse cx="25" cy="245" rx="5.5" ry="10"  fill="#B86828"/>
+        <ellipse cx="33" cy="247" rx="5.5" ry="10"  fill="#B86828"/>
+        <ellipse cx="41" cy="245" rx="5"   ry="9.5" fill="#A85C20"/>
+        <ellipse cx="48" cy="240" rx="4.5" ry="8"   fill="#9C5018"/>
+        <ellipse cx="31" cy="222" rx="7" ry="4" fill="rgba(215,130,55,0.28)"/>
+      </g>
+      <g id="bg-hand-right-g">
+        <circle cx="167" cy="224" r="18" fill="url(#bgSkinArm)"/>
+        <ellipse cx="182" cy="239" rx="5"   ry="9"   fill="#A85C20"/>
+        <ellipse cx="175" cy="245" rx="5.5" ry="10"  fill="#B86828"/>
+        <ellipse cx="167" cy="247" rx="5.5" ry="10"  fill="#B86828"/>
+        <ellipse cx="159" cy="245" rx="5"   ry="9.5" fill="#A85C20"/>
+        <ellipse cx="152" cy="240" rx="4.5" ry="8"   fill="#9C5018"/>
+        <ellipse cx="169" cy="222" rx="7" ry="4" fill="rgba(215,130,55,0.28)"/>
+      </g>
+
+      <!-- ══ COU ══ -->
+      <g id="bg-neck-g">
+        <rect x="86" y="120" width="28" height="24" rx="10" fill="#A85C20"/>
+        <rect x="86" y="120" width="28" height="8"  rx="10" fill="rgba(0,0,0,0.1)"/>
+      </g>
+
+      <!-- ══ TÊTE ══ -->
       <g id="bg-head-g">
-        <!-- Cheveux naturels africains -->
-        <ellipse cx="100" cy="27" rx="49" ry="30" fill="#140800"/>
-        <ellipse cx="62"  cy="46" rx="16" ry="24" fill="#140800"/>
-        <ellipse cx="138" cy="46" rx="16" ry="24" fill="#140800"/>
-        <!-- Texture des boucles -->
-        <circle cx="80"  cy="18" r="6"  fill="#221005"/>
-        <circle cx="95"  cy="12" r="7"  fill="#221005"/>
-        <circle cx="110" cy="15" r="6"  fill="#221005"/>
-        <circle cx="120" cy="24" r="5"  fill="#221005"/>
-        <circle cx="76"  cy="28" r="5"  fill="#221005"/>
-        <circle cx="100" cy="9"  r="6"  fill="#221005"/>
-        <circle cx="88"  cy="22" r="4"  fill="#1A0C04"/>
+        <!-- Cheveux courts afro -->
+        <ellipse cx="100" cy="30"  rx="52" ry="24" fill="url(#bgHair)"/>
+        <ellipse cx="51"  cy="54"  rx="14" ry="20" fill="url(#bgHair)"/>
+        <ellipse cx="149" cy="54"  rx="14" ry="20" fill="url(#bgHair)"/>
+        <ellipse cx="100" cy="62"  rx="50" ry="18" fill="#080200"/>
+        <ellipse cx="86"  cy="22"  rx="22" ry="10" fill="rgba(70,28,5,0.5)"/>
+        <circle cx="80"  cy="18" r="5.5" fill="rgba(255,255,255,0.03)"/>
+        <circle cx="95"  cy="12" r="6"   fill="rgba(255,255,255,0.025)"/>
+        <circle cx="112" cy="16" r="5.5" fill="rgba(255,255,255,0.03)"/>
 
         <!-- Visage -->
-        <circle cx="100" cy="72" r="48" fill="url(#bgSkin)"/>
+        <circle cx="100" cy="72" r="52" fill="url(#bgSkin)"/>
+        <ellipse cx="70" cy="64" rx="14" ry="10" fill="rgba(220,140,70,0.22)"/>
 
-        <!-- OREILLES (groupe animé pour wiggle) -->
+        <!-- Oreilles -->
         <g id="bg-ears-g">
-          <ellipse cx="52"  cy="72" rx="13" ry="16" fill="#7A4020"/>
-          <ellipse cx="52"  cy="72" rx="8"  ry="10" fill="#5C2E10"/>
-          <ellipse cx="148" cy="72" rx="13" ry="16" fill="#7A4020"/>
-          <ellipse cx="148" cy="72" rx="8"  ry="10" fill="#5C2E10"/>
+          <ellipse cx="49"  cy="72" rx="14" ry="17" fill="#A85C20"/>
+          <ellipse cx="49"  cy="72" rx="9"  ry="11" fill="#8C4518"/>
+          <ellipse cx="49"  cy="72" rx="4.5" ry="6" fill="#7A3812"/>
+          <ellipse cx="151" cy="72" rx="14" ry="17" fill="#A85C20"/>
+          <ellipse cx="151" cy="72" rx="9"  ry="11" fill="#8C4518"/>
+          <ellipse cx="151" cy="72" rx="4.5" ry="6" fill="#7A3812"/>
         </g>
 
-        <!-- Sourcils épais et expressifs -->
-        <path d="M68,56 Q83,46 97,53" stroke="#120800" stroke-width="7" fill="none" stroke-linecap="round"/>
-        <path d="M103,53 Q117,46 132,56" stroke="#120800" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <!-- Sourcils -->
+        <path d="M61,56 Q75,47 89,54"  stroke="#1A0800" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+        <path d="M111,54 Q125,47 139,56" stroke="#1A0800" stroke-width="4.5" fill="none" stroke-linecap="round"/>
 
-        <!-- YEUX (groupe animé pour clignement) -->
+        <!-- Yeux -->
         <g id="bg-eyes-g">
-          <!-- Blancs des yeux -->
-          <ellipse cx="83"  cy="66" rx="13" ry="10" fill="#FDFBF6"/>
-          <ellipse cx="117" cy="66" rx="13" ry="10" fill="#FDFBF6"/>
-          <!-- Iris brun chaud -->
-          <circle cx="83"  cy="66" r="7.5" fill="#3D1800"/>
-          <circle cx="117" cy="66" r="7.5" fill="#3D1800"/>
-          <!-- Limbal ring (contour sombre de l'iris) -->
-          <circle cx="83"  cy="66" r="7.5" fill="none" stroke="#200A00" stroke-width="1.5"/>
-          <circle cx="117" cy="66" r="7.5" fill="none" stroke="#200A00" stroke-width="1.5"/>
-          <!-- Pupilles -->
-          <circle cx="83"  cy="66" r="4"   fill="#060100"/>
-          <circle cx="117" cy="66" r="4"   fill="#060100"/>
-          <!-- Reflets lumineux -->
-          <circle cx="86"  cy="62" r="2.6" fill="rgba(255,255,255,0.96)"/>
-          <circle cx="120" cy="62" r="2.6" fill="rgba(255,255,255,0.96)"/>
-          <circle cx="82"  cy="70" r="1.3" fill="rgba(255,255,255,0.5)"/>
-          <circle cx="116" cy="70" r="1.3" fill="rgba(255,255,255,0.5)"/>
-          <!-- Cils inférieurs -->
-          <path d="M71,72 Q83,78 95,72"  stroke="#120800" stroke-width="2" fill="none"/>
-          <path d="M105,72 Q117,78 129,72" stroke="#120800" stroke-width="2" fill="none"/>
-          <!-- Cils supérieurs (au bord de la paupière) -->
-          <path d="M70,64 Q83,56 96,64"  stroke="#120800" stroke-width="3" fill="none"/>
-          <path d="M104,64 Q117,56 130,64" stroke="#120800" stroke-width="3" fill="none"/>
-          <!-- PAUPIÈRES animées — repos : légèrement rétractées, yeux grands ouverts -->
-          <g id="bg-lids-g">
-            <ellipse class="bg-lid" cx="83"  cy="57" rx="13" ry="7" fill="#7A3A18"/>
-            <ellipse class="bg-lid" cx="117" cy="57" rx="13" ry="7" fill="#7A3A18"/>
-          </g>
+          <ellipse cx="76"  cy="66" rx="15" ry="12" fill="#FEFCF8"/>
+          <ellipse cx="124" cy="66" rx="15" ry="12" fill="#FEFCF8"/>
+          <circle cx="76"  cy="67" r="9"   fill="#3D1C00"/>
+          <circle cx="124" cy="67" r="9"   fill="#3D1C00"/>
+          <circle cx="76"  cy="67" r="4.8" fill="#0A0300"/>
+          <circle cx="124" cy="67" r="4.8" fill="#0A0300"/>
+          <circle cx="81"  cy="61" r="5"   fill="rgba(255,255,255,0.97)"/>
+          <circle cx="129" cy="61" r="5"   fill="rgba(255,255,255,0.97)"/>
+          <circle cx="72"  cy="71" r="2.2" fill="rgba(255,255,255,0.55)"/>
+          <circle cx="120" cy="71" r="2.2" fill="rgba(255,255,255,0.55)"/>
+          <path d="M61,62 Q76,52 91,62"  stroke="#0D0400" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M109,62 Q124,52 139,62" stroke="#0D0400" stroke-width="3" fill="none" stroke-linecap="round"/>
         </g>
 
-        <!-- NEZ (groupe animé pour frémissement) -->
+        <!-- Nez -->
         <g id="bg-nose-g">
-          <!-- Nez large africain -->
-          <ellipse cx="100" cy="81" rx="12" ry="9"  fill="#7A4020"/>
-          <!-- Narines -->
-          <ellipse cx="93"  cy="85" rx="6"  ry="4.5" fill="#4A2008"/>
-          <ellipse cx="107" cy="85" rx="6"  ry="4.5" fill="#4A2008"/>
-          <!-- Reflet bout du nez -->
-          <ellipse cx="100" cy="78" rx="4"  ry="3"   fill="#B06030" opacity="0.5"/>
+          <ellipse cx="100" cy="82" rx="9"   ry="14"  fill="#9C5018"/>
+          <ellipse cx="93"  cy="93" rx="5.5" ry="4"   fill="#7A3410"/>
+          <ellipse cx="107" cy="93" rx="5.5" ry="4"   fill="#7A3410"/>
+          <ellipse cx="100" cy="72" rx="3"   ry="2"   fill="rgba(215,130,55,0.5)"/>
         </g>
 
-        <!-- Pommettes -->
-        <ellipse cx="66"  cy="88" rx="16" ry="10" fill="rgba(160,55,25,0.22)"/>
-        <ellipse cx="134" cy="88" rx="16" ry="10" fill="rgba(160,55,25,0.22)"/>
+        <!-- Joues -->
+        <ellipse cx="64"  cy="98" rx="20" ry="13" fill="rgba(255,110,70,0.18)"/>
+        <ellipse cx="136" cy="98" rx="20" ry="13" fill="rgba(255,110,70,0.18)"/>
 
-        <!-- BOUCHE (groupe animé pour ouverture) -->
+        <!-- Bouche -->
         <g id="bg-mouth-g">
-          <!-- Bouche fermée (par défaut) -->
           <g id="bg-mouth-closed">
-            <path d="M81,93 Q91,88 100,90 Q109,88 119,93" fill="#5C2810"/>
-            <path d="M81,93 Q100,106 119,93 Q109,88 100,90 Q91,88 81,93Z" fill="#7A3824"/>
+            <path d="M78,105 Q100,120 122,105" fill="none" stroke="#7A2E10" stroke-width="3" stroke-linecap="round"/>
+            <path d="M78,105 Q100,120 122,105 Q112,100 100,101 Q88,100 78,105Z" fill="#C04030"/>
+            <ellipse cx="100" cy="114" rx="14" ry="4.5" fill="rgba(220,90,50,0.32)"/>
+            <circle cx="74"  cy="107" r="3.5" fill="rgba(150,55,20,0.2)"/>
+            <circle cx="126" cy="107" r="3.5" fill="rgba(150,55,20,0.2)"/>
           </g>
-          <!-- Bouche ouverte (animée) -->
           <g id="bg-mouth-open">
-            <path d="M79,91 Q100,87 121,91 Q121,108 100,110 Q79,108 79,91Z" fill="#5C2810"/>
-            <ellipse cx="100" cy="100" rx="17" ry="10" fill="#1A0808"/>
-            <rect x="83" y="91" width="34" height="8" rx="4" fill="#EDE8DC"/>
-            <rect x="85" y="102" width="30" height="7" rx="3.5" fill="#E5E0D0"/>
-            <ellipse cx="100" cy="110" rx="11" ry="6" fill="#CC4444"/>
+            <path d="M78,104 Q100,120 122,104 Q122,104 122,121 Q100,126 78,121 Z" fill="#7A2E10"/>
+            <ellipse cx="100" cy="114" rx="19" ry="11" fill="#150606"/>
+            <rect x="83"  y="104" width="34" height="9"  rx="4.5" fill="#F5F1EB"/>
+            <rect x="85"  y="116" width="30" height="8"  rx="4"   fill="#EDE9DF"/>
+            <ellipse cx="100" cy="125" rx="13" ry="6" fill="#D04040"/>
           </g>
         </g>
       </g><!-- fin bg-head-g -->
 
-      <!-- ══ COU (groupe animé pour étirement) ══ -->
-      <g id="bg-neck-g">
-        <rect x="87" y="118" width="26" height="22" rx="7" fill="#8C4A20"/>
-      </g>
-
-      <!-- ══ TORSE (groupe animé pour rebond ventre / gonflement poitrine) ══ -->
-      <g id="bg-torso-g">
-        <rect x="50" y="138" width="100" height="106" rx="18" fill="#D42020"/>
-        <path d="M87,138 Q100,152 113,138" stroke="#B01818" stroke-width="2.5" fill="none"/>
-        <!-- Poche poitrine (repère visuel zone poitrine) -->
-        <rect x="62" y="154" width="22" height="18" rx="5" fill="#B01818" opacity="0.6"/>
-        <!-- Bouton de poche -->
-        <circle cx="73" cy="172" r="2.5" fill="#FF6060" opacity="0.7"/>
-        <!-- Nombril -->
-        <circle cx="100" cy="204" r="4.5" fill="rgba(0,0,0,0.14)"/>
-      </g>
-
-      <!-- ══ BRAS (groupes animés pour flexion) ══ -->
-      <g id="bg-arm-left-g">
-        <rect x="14"  y="138" width="38" height="78" rx="18" fill="#D42020"/>
-      </g>
-      <g id="bg-arm-right-g">
-        <rect x="148" y="138" width="38" height="78" rx="18" fill="#D42020"/>
-      </g>
-
-      <!-- ══ MAINS (groupes animés pour coucou) ══ -->
-      <g id="bg-hand-left-g">
-        <circle cx="33"  cy="224" r="20" fill="#8C4A20"/>
-        <circle cx="24"  cy="216" r="5.5" fill="#7A4020"/>
-        <circle cx="33"  cy="211" r="5.5" fill="#7A4020"/>
-        <circle cx="42"  cy="216" r="5.5" fill="#7A4020"/>
-      </g>
-      <g id="bg-hand-right-g">
-        <circle cx="167" cy="224" r="20" fill="#8C4A20"/>
-        <circle cx="158" cy="216" r="5.5" fill="#7A4020"/>
-        <circle cx="167" cy="211" r="5.5" fill="#7A4020"/>
-        <circle cx="176" cy="216" r="5.5" fill="#7A4020"/>
-      </g>
-
-      <!-- Ceinture -->
-      <rect x="50" y="240" width="100" height="22" rx="6" fill="#0A1E5E"/>
-
-      <!-- ══ JAMBES (groupes animés pour marche) ══ -->
-      <g id="bg-leg-left-g">
-        <rect x="57"  y="258" width="36" height="110" rx="15" fill="#1A3A8C"/>
-      </g>
-      <g id="bg-leg-right-g">
-        <rect x="107" y="258" width="36" height="110" rx="15" fill="#1A3A8C"/>
-      </g>
-
-      <!-- ══ PIEDS (groupe animé pour taper) ══ -->
-      <g id="bg-feet-g">
-        <ellipse cx="75"  cy="374" rx="32" ry="14" fill="#2C1808"/>
-        <ellipse cx="68"  cy="367" rx="16" ry="8"  fill="#3D2510"/>
-        <ellipse cx="125" cy="374" rx="32" ry="14" fill="#2C1808"/>
-        <ellipse cx="132" cy="367" rx="16" ry="8"  fill="#3D2510"/>
-      </g>
-
-      <!-- Sol / herbe -->
-      <ellipse cx="100" cy="392" rx="72" ry="10" fill="rgba(80,160,60,0.35)"/>
-
-      <!-- Anneaux d'apprentissage (contrôlés par JS) -->
+      <!-- Anneaux d'apprentissage -->
       <circle id="bg-ring1" cx="0" cy="0" r="0" fill="none" stroke="#FFD60A" stroke-width="5" opacity="0" stroke-dasharray="10 5" stroke-linecap="round"/>
       <circle id="bg-ring2" cx="0" cy="0" r="0" fill="none" stroke="#FFD60A" stroke-width="5" opacity="0" stroke-dasharray="10 5" stroke-linecap="round"/>
     </svg>
@@ -1915,11 +2291,13 @@ const BODY_PARTS = [
   { id:'oreilles', spoken:'Les oreilles', zone1:{ cx:52,  cy:72,  r:18 }, zone2:{ cx:148, cy:72,  r:18 } },
   { id:'cou',      spoken:'Le cou',       zone1:{ cx:100, cy:129, r:16 }, zone2:null },
   { id:'poitrine', spoken:'La poitrine', zone1:{ cx:100, cy:162, r:22 }, zone2:null },
-  { id:'ventre',   spoken:'Le ventre',   zone1:{ cx:100, cy:195, r:26 }, zone2:null },
+  { id:'ventre',   spoken:'Le ventre',   zone1:{ cx:100, cy:208, r:40 }, zone2:null },
   { id:'bras',     spoken:'Les bras',     zone1:{ cx:33,  cy:177, r:26 }, zone2:{ cx:167, cy:177, r:26 } },
   { id:'mains',    spoken:'Les mains',    zone1:{ cx:33,  cy:224, r:22 }, zone2:{ cx:167, cy:224, r:22 } },
-  { id:'jambes',   spoken:'Les jambes',   zone1:{ cx:75,  cy:313, r:28 }, zone2:{ cx:125, cy:313, r:28 } },
-  { id:'pieds',    spoken:'Les pieds',    zone1:{ cx:75,  cy:374, r:30 }, zone2:{ cx:125, cy:374, r:30 } },
+  { id:'cuisse',   spoken:'La cuisse',   zone1:{ cx:75,  cy:293, r:28 }, zone2:{ cx:125, cy:293, r:28 } },
+  { id:'genou',    spoken:'Le genou',    zone1:{ cx:75,  cy:322, r:17 }, zone2:{ cx:125, cy:322, r:17 } },
+  { id:'jambes',   spoken:'Les jambes',  zone1:{ cx:75,  cy:366, r:28 }, zone2:{ cx:125, cy:366, r:28 } },
+  { id:'pieds',    spoken:'Les pieds',   zone1:{ cx:70,  cy:418, r:24 }, zone2:{ cx:130, cy:418, r:24 } },
 ];
 
 /* ─── ANIMAUX ───────────────────────────────────────────── */
@@ -2154,8 +2532,76 @@ try {
   introAudio.volume = 0.75;
 } catch(e) {}
 
+let musicMuted = false;
+
+// ── Verrouillage parental ──────────────────────────────────
+let gameLocked    = false;
+let unlockTimer   = null;
+
+function quickLock() {
+  if (gameLocked) return;
+  gameLocked = true;
+  updateLockState();
+}
+
+function updateLockState() {
+  const btn       = document.getElementById('btn-lock-home');
+  const indicator = document.getElementById('lock-floating');
+  document.body.classList.toggle('game-locked', gameLocked);
+  if (btn) {
+    btn.textContent = gameLocked ? '🔒' : '🔓';
+    btn.classList.toggle('locked', gameLocked);
+  }
+  if (indicator) indicator.classList.toggle('visible', gameLocked);
+}
+
+function startUnlockHold(e) {
+  if (!gameLocked) return;
+  e.preventDefault();
+  const indicator = document.getElementById('lock-floating');
+  if (indicator) indicator.classList.add('holding');
+  unlockTimer = setTimeout(() => {
+    gameLocked = false;
+    updateLockState();
+    const ind = document.getElementById('lock-floating');
+    if (ind) ind.classList.remove('holding');
+  }, 3000);
+}
+
+function cancelUnlockHold() {
+  clearTimeout(unlockTimer);
+  unlockTimer = null;
+  const indicator = document.getElementById('lock-floating');
+  if (indicator) indicator.classList.remove('holding');
+}
+
+// Attacher les événements sur l'indicateur flottant après chargement
+window.addEventListener('DOMContentLoaded', () => {
+  const ind = document.getElementById('lock-floating');
+  if (!ind) return;
+  ind.addEventListener('touchstart',  startUnlockHold,  { passive: false });
+  ind.addEventListener('mousedown',   startUnlockHold);
+  ind.addEventListener('touchend',    cancelUnlockHold);
+  ind.addEventListener('touchcancel', cancelUnlockHold);
+  ind.addEventListener('mouseup',     cancelUnlockHold);
+  ind.addEventListener('mouseleave',  cancelUnlockHold);
+});
+// ─────────────────────────────────────────────────────────────
+
+function toggleGlobalMusic() {
+  musicMuted = !musicMuted;
+  const btn = document.getElementById('btn-mute-global');
+  if (musicMuted) {
+    if (introAudio) { introAudio.pause(); introAudio.currentTime = 0; }
+    if (btn) { btn.textContent = '🔇'; btn.classList.add('muted'); }
+  } else {
+    if (btn) { btn.textContent = '🔊'; btn.classList.remove('muted'); }
+    playIntroAudio();
+  }
+}
+
 function playIntroAudio() {
-  if (!introAudio) return;
+  if (!introAudio || musicMuted) return;
   introAudio.currentTime = 0;
   introAudio.volume = 0.75;
   introAudio.play().catch(() => {});
@@ -2355,8 +2801,17 @@ function switchTab(btn) {
     stopPianoGame();
     stopCatGame();
     stopBodyGame();
+    stopShapesGame();
+    stopCompareGame();
+    stopMatchGame();
     playIntroAudio();
   }
+}
+
+function goToCorpsTab() {
+  const btn = document.querySelector('[data-tab="corps"]');
+  if (btn) switchTab(btn);
+  else show('home');
 }
 
 /* ─── SCREEN ROUTER ────────────────────────────────────── */
@@ -2600,7 +3055,6 @@ function greenExplosion(cx, cy) {
 function showPianoMenu() {
   stopPianoGame();
   stopCatGame();
-  stopBodyGame();
   document.getElementById('tab-piano').style.justifyContent = 'center';
   document.getElementById('piano-menu').style.display = 'flex';
   document.getElementById('piano-fire-mode').style.display = 'none';
@@ -2612,10 +3066,8 @@ function selectPianoMode(mode) {
     document.getElementById('tab-piano').style.justifyContent = '';
     document.getElementById('piano-fire-mode').style.display = 'flex';
     setTimeout(startPianoGame, 60);
-  } else if (mode === 'cat') {
-    startCatGame();
   } else {
-    startBodyGame();
+    startCatGame();
   }
 }
 
@@ -2884,6 +3336,7 @@ function setBodyRing(id, zone) {
 }
 
 function startBodyGame() {
+  fadeOutIntroAudio();
   bodyG.active = true;
   bodyG.phase  = 'teaching';
   bodyG.targetQueue = [];
@@ -2942,7 +3395,8 @@ function askBodyPart() {
 
 function bodyTapHandler(e) {
   if (e.cancelable) e.preventDefault();
-  if (bodyG.phase !== 'game' || !bodyG.active) return;
+  if ((bodyG.phase !== 'game' && bodyG.phase !== 'feedback') || !bodyG.active) return;
+  if (bodyG.phase === 'feedback') return;
 
   const svg  = document.getElementById('bg-svg');
   const rect = svg.getBoundingClientRect();
@@ -2955,16 +3409,24 @@ function bodyTapHandler(e) {
   if (!hit) return;
 
   if (hit === target.id) {
+    bodyG.phase = 'feedback';
     triggerBodyAnim(hit);
     showTapBurst(pt.clientX, pt.clientY);
     playWin();
+    confettiRain();
     speak(pickBravo(), 0.78, 1.4);
+    showBodyBravo();
+    zoomToBodyPart(target);
     bodyG.targetIdx++;
-    if (bodyG.targetIdx >= bodyG.targetQueue.length) {
-      bgDelay(bodyGameWin, 800);
-    } else {
-      bgDelay(askBodyPart, 700);
-    }
+    bgDelay(() => {
+      restoreBodyZoom();
+      bodyG.phase = 'game';
+      if (bodyG.targetIdx >= bodyG.targetQueue.length) {
+        bgDelay(bodyGameWin, 300);
+      } else {
+        bgDelay(askBodyPart, 400);
+      }
+    }, 1700);
   } else {
     const wrap = document.getElementById('bg-figure-wrap');
     wrap.classList.add('bg-shake');
@@ -2984,9 +3446,11 @@ function detectBodyPart(x, y) {
   if (d(100, 162) < 24)                            return 'poitrine';
   if (d(33, 177) < 28 || d(167, 177) < 28)        return 'bras';
   if (d(33, 224) < 26 || d(167, 224) < 26)        return 'mains';
-  if (d(100, 195) < 30)                            return 'ventre';
-  if (d(75, 313) < 30 || d(125, 313) < 30)        return 'jambes';
-  if (d(75, 374) < 38 || d(125, 374) < 38)        return 'pieds';
+  if (d(100, 208) < 42)                            return 'ventre';
+  if (d(75, 322) < 18 || d(125, 322) < 18)        return 'genou';
+  if (d(75, 293) < 30 || d(125, 293) < 30)        return 'cuisse';
+  if (d(75, 366) < 32 || d(125, 366) < 32)        return 'jambes';
+  if (d(70, 418) < 30 || d(130, 418) < 30)        return 'pieds';
   return null;
 }
 
@@ -3001,13 +3465,49 @@ function showTapBurst(cx, cy) {
   setTimeout(() => burst.remove(), 560);
 }
 
+function getBodyZoomVB(part) {
+  const z1 = part.zone1;
+  const m  = z1.r * 2.2;
+  let x1 = z1.cx - z1.r - m, x2 = z1.cx + z1.r + m;
+  let y1 = z1.cy - z1.r - m, y2 = z1.cy + z1.r + m;
+  if (part.zone2) {
+    const z2 = part.zone2;
+    const m2 = z2.r * 2.2;
+    x1 = Math.min(x1, z2.cx - z2.r - m2);
+    x2 = Math.max(x2, z2.cx + z2.r + m2);
+    y1 = Math.min(y1, z2.cy - z2.r - m2);
+    y2 = Math.max(y2, z2.cy + z2.r + m2);
+  }
+  x1 = Math.max(0, x1);   y1 = Math.max(-14, y1);
+  x2 = Math.min(200, x2); y2 = Math.min(445, y2);
+  return `${x1.toFixed(1)} ${y1.toFixed(1)} ${(x2-x1).toFixed(1)} ${(y2-y1).toFixed(1)}`;
+}
+
+function zoomToBodyPart(part) {
+  document.getElementById('bg-svg').setAttribute('viewBox', getBodyZoomVB(part));
+}
+
+function restoreBodyZoom() {
+  document.getElementById('bg-svg').setAttribute('viewBox', '0 -14 200 459');
+}
+
+function showBodyBravo() {
+  const wrap = document.getElementById('bg-figure-wrap');
+  const msgs = ['Bravo ! 🌟','Génial ! 🎉','Super ! 💪','Excellent ! ✨','Parfait ! 🏆'];
+  const el   = document.createElement('div');
+  el.className = 'bg-bravo-flash';
+  el.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 1500);
+}
+
 function bodyGameWin() {
   document.getElementById('bg-title').textContent = 'Bravo ! Tu connais ton corps ! 🎉';
   speak('Bravo Chérina ! Tu connais bien les parties du corps ! Super !', 0.72, 1.15);
   confettiRain();
   playWin();
   bgDelay(confettiRain, 600);
-  bgDelay(() => { stopBodyGame(); showPianoMenu(); }, 4500);
+  bgDelay(() => { stopBodyGame(); goToCorpsTab(); }, 4500);
 }
 
 function stopBodyGame() {
@@ -3027,7 +3527,7 @@ function stopBodyGame() {
 function triggerBodyAnim(partId) {
   const map = {
     tete:     [{ el:'bg-head-g',       cls:'bg-tilt',    dur:750 }],
-    yeux:     [{ el:'bg-lids-g',       cls:'bg-blink',   dur:450 }],
+    yeux:     [],
     nez:      [{ el:'bg-nose-g',       cls:'bg-twitch',  dur:520 }],
     bouche:   [{ el:'bg-mouth-g',      cls:'bg-open',    dur:950 }],
     oreilles: [{ el:'bg-ears-g',       cls:'bg-wiggle',  dur:580 }],
@@ -3038,6 +3538,10 @@ function triggerBodyAnim(partId) {
     mains:    [{ el:'bg-hand-left-g',  cls:'bg-wave',    dur:750 },
                { el:'bg-hand-right-g', cls:'bg-wave',    dur:750 }],
     ventre:   [{ el:'bg-torso-g',      cls:'bg-bounce',  dur:620 }],
+    cuisse:   [{ el:'bg-thigh-left-g',  cls:'bg-bounce',  dur:620 },
+               { el:'bg-thigh-right-g', cls:'bg-bounce', dur:620 }],
+    genou:    [{ el:'bg-knee-left-g',   cls:'bg-kick',   dur:600 },
+               { el:'bg-knee-right-g',  cls:'bg-kick',   dur:600 }],
     jambes:   [{ el:'bg-leg-left-g',   cls:'bg-kick',    dur:640 },
                { el:'bg-leg-right-g',  cls:'bg-kick',    dur:640 }],
     pieds:    [{ el:'bg-feet-g',       cls:'bg-tap',     dur:580 }],
@@ -3951,6 +4455,318 @@ function dismissSplash() {
 document.addEventListener('dblclick',    e => e.preventDefault(), { passive: false });
 document.addEventListener('contextmenu', e => e.preventDefault());
 
+/* ─── FEEDBACK HAPTIQUE ─────────────────────────────────── */
+function vibrateError() {
+  try { navigator.vibrate(90); } catch(e) {}
+}
+
+function playWait() {
+  try {
+    const ctx  = new (window.AudioContext || window.webkitAudioContext)();
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(740, ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(520, ctx.currentTime + 0.25);
+    gain.gain.setValueAtTime(0.35, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.38);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.4);
+    setTimeout(() => ctx.close(), 600);
+  } catch(e) {}
+}
+
+/* ─── JEU DES FORMES ────────────────────────────────────── */
+const SHAPES = [
+  { id:'cercle',    label:'Cercle',    spoken:'cercle',    art:'le ',
+    svg:'<circle cx="50" cy="50" r="44" fill="#fff"/>'},
+  { id:'carre',     label:'Carré',     spoken:'carré',     art:'le ',
+    svg:'<rect x="6" y="6" width="88" height="88" rx="6" fill="#fff"/>'},
+  { id:'triangle',  label:'Triangle',  spoken:'triangle',  art:'le ',
+    svg:'<polygon points="50,4 96,92 4,92" fill="#fff"/>'},
+  { id:'rectangle', label:'Rectangle', spoken:'rectangle', art:'le ',
+    svg:'<rect x="4" y="22" width="92" height="56" rx="6" fill="#fff"/>'},
+  { id:'etoile',    label:'Étoile',    spoken:'étoile',    art:"l'",
+    svg:'<polygon points="50,4 61,36 96,36 68,57 79,92 50,70 21,92 32,57 4,36 39,36" fill="#fff"/>'},
+  { id:'losange',   label:'Losange',   spoken:'losange',   art:'le ',
+    svg:'<polygon points="50,4 96,50 50,96 4,50" fill="#fff"/>'},
+];
+
+const sg = { active:false, score:0, target:null, speaking:false };
+
+function startShapesGame() {
+  fadeOutIntroAudio();
+  sg.active = true; sg.score = 0; sg.target = null;
+  document.getElementById('fo-score').textContent = '⭐ 0';
+  document.getElementById('shapes-overlay').classList.add('active');
+  nextShapeRound();
+}
+
+function stopShapesGame() {
+  sg.active = false;
+  document.getElementById('shapes-overlay').classList.remove('active');
+  if (!introAudio || !introAudio.paused) return;
+  playIntroAudio();
+}
+
+function nextShapeRound() {
+  if (!sg.active) return;
+  const shuffled = shuffle([...SHAPES]).slice(0, 4);
+  sg.target = shuffled[Math.floor(Math.random() * shuffled.length)];
+  const instr = `Touche ${sg.target.art}${sg.target.label} !`;
+  document.getElementById('fo-instr').textContent = instr;
+  sg.speaking = true;
+  speak(instr, 0.78, 1.2);
+  setTimeout(() => { sg.speaking = false; }, Math.max(1800, instr.length * 75));
+  const grid = document.getElementById('shapes-grid');
+  grid.innerHTML = '';
+  shuffled.forEach(shape => {
+    const card = document.createElement('div');
+    card.className = 'shape-card';
+    card.innerHTML = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${shape.svg}</svg>`;
+    card.addEventListener('click', () => onShapeTap(shape));
+    card.addEventListener('touchstart', e => { e.preventDefault(); onShapeTap(shape); }, { passive:false });
+    grid.appendChild(card);
+  });
+}
+
+function onShapeTap(shape) {
+  if (!sg.active || !sg.target) return;
+  if (sg.speaking) { playWait(); return; }
+  if (shape.id === sg.target.id) {
+    sg.score++;
+    document.getElementById('fo-score').textContent = `⭐ ${sg.score}`;
+    speak(pickBravo(), 0.75, 1.35);
+    confettiRain();
+    sg.target = null;
+    setTimeout(nextShapeRound, 1100);
+  } else {
+    vibrateError();
+    speak('Cherche encore !', 0.78, 1.2);
+  }
+}
+
+/* ─── JEU DES COMPARAISONS ──────────────────────────────── */
+const COMPARE_TYPES = [
+  { id:'grand', target:'a', adjM:'grand',  adjF:'grande',
+    sizeA:{w:110,h:110}, sizeB:{w:52,h:52} },
+  { id:'petit', target:'b', adjM:'petit',  adjF:'petite',
+    sizeA:{w:110,h:110}, sizeB:{w:52,h:52} },
+];
+
+const cg2 = { active:false, score:0, current:null, pool:[], animal:null, speaking:false };
+
+function startCompareGame() {
+  fadeOutIntroAudio();
+  cg2.active = true; cg2.score = 0;
+  cg2.pool = shuffle([...COMPARE_TYPES]);
+  document.getElementById('cmp-score').textContent = '⭐ 0';
+  document.getElementById('compare-overlay').classList.add('active');
+  nextCompareRound();
+}
+
+function stopCompareGame() {
+  cg2.active = false;
+  document.getElementById('compare-overlay').classList.remove('active');
+}
+
+function nextCompareRound() {
+  if (!cg2.active) return;
+  if (cg2.pool.length === 0) cg2.pool = shuffle([...COMPARE_TYPES]);
+  cg2.current = cg2.pool.pop();
+  cg2.animal  = pick(ANIMALS);
+  const c   = cg2.current;
+  const a   = cg2.animal;
+  const adj = (a.art === 'la ') ? c.adjF : c.adjM;
+  const question = `Touche ${a.art}${adj} ${a.label.toLowerCase()} !`;
+  document.getElementById('cmp-instr').textContent = question;
+  cg2.speaking = true;
+  speak(question, 0.78, 1.2);
+  setTimeout(() => { cg2.speaking = false; }, Math.max(1800, question.length * 75));
+  const pair = document.getElementById('compare-pair');
+  pair.innerHTML = '';
+  const sides = Math.random() < 0.5 ? ['a','b'] : ['b','a'];
+  sides.forEach(side => {
+    const size = side === 'a' ? c.sizeA : c.sizeB;
+    const item = document.createElement('div');
+    item.className = 'compare-item';
+    const img = document.createElement('img');
+    img.src = `ANIMAUX/${a.image}`;
+    img.style.cssText = `width:${size.w}px;height:${size.h}px;object-fit:contain;display:block;`;
+    item.appendChild(img);
+    item.addEventListener('click', () => onCompareTap(side));
+    item.addEventListener('touchstart', e => { e.preventDefault(); onCompareTap(side); }, { passive:false });
+    pair.appendChild(item);
+  });
+}
+
+function onCompareTap(side) {
+  if (!cg2.active || !cg2.current) return;
+  if (cg2.speaking) { playWait(); return; }
+  if (side === cg2.current.target) {
+    cg2.score++;
+    document.getElementById('cmp-score').textContent = `⭐ ${cg2.score}`;
+    speak(pickBravo(), 0.75, 1.35);
+    confettiRain();
+    cg2.current = null;
+    setTimeout(nextCompareRound, 1100);
+  } else {
+    vibrateError();
+    const c = cg2.current, a = cg2.animal;
+    const adj = (a.art === 'la ') ? c.adjF : c.adjM;
+    speak(`Touche ${a.art}${adj} ${a.label.toLowerCase()} !`, 0.78, 1.1);
+  }
+}
+
+/* ─── JEU D'ASSOCIATION (MEMORY) ────────────────────────── */
+const MATCH_COLORS = [
+  { id:'rouge',  hex:'#FF3B30', label:'rouge'  },
+  { id:'bleu',   hex:'#007AFF', label:'bleu'   },
+  { id:'vert',   hex:'#30D158', label:'vert'   },
+  { id:'jaune',  hex:'#FFD60A', label:'jaune'  },
+  { id:'violet', hex:'#BF5AF2', label:'violet' },
+  { id:'orange', hex:'#FF9F0A', label:'orange' },
+];
+const MATCH_SHAPE_IDS = ['cercle','carre','triangle','etoile','losange','rectangle'];
+
+function shapePathFor(id, color) {
+  const paths = {
+    cercle:    `<circle cx="50" cy="50" r="42" fill="${color}"/>`,
+    carre:     `<rect x="8" y="8" width="84" height="84" rx="8" fill="${color}"/>`,
+    triangle:  `<polygon points="50,6 92,90 8,90" fill="${color}"/>`,
+    etoile:    `<polygon points="50,5 61,36 96,36 68,57 79,92 50,70 21,92 32,57 4,36 39,36" fill="${color}"/>`,
+    losange:   `<polygon points="50,5 95,50 50,95 5,50" fill="${color}"/>`,
+    rectangle: `<rect x="6" y="20" width="88" height="60" rx="8" fill="${color}"/>`,
+  };
+  return `<svg width="68" height="68" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${paths[id]||''}</svg>`;
+}
+
+function genColorPairs() {
+  const cols  = shuffle([...MATCH_COLORS]).slice(0, 3);
+  const shape = pick(MATCH_SHAPE_IDS);
+  const cards = [];
+  cols.forEach(c => {
+    for (let i = 0; i < 2; i++)
+      cards.push({ key:c.id, spoken:c.label, html:shapePathFor(shape, c.hex) });
+  });
+  return shuffle(cards);
+}
+
+function genShapePairs() {
+  const shapes = shuffle([...MATCH_SHAPE_IDS]).slice(0, 3);
+  const color  = pick(MATCH_COLORS);
+  const cards  = [];
+  shapes.forEach(s => {
+    for (let i = 0; i < 2; i++)
+      cards.push({ key:s, spoken:s === 'carre' ? 'carré' : s, html:shapePathFor(s, color.hex) });
+  });
+  return shuffle(cards);
+}
+
+function genAnimalPairs() {
+  const animals = shuffle([...ANIMALS]).slice(0, 3);
+  const cards   = [];
+  animals.forEach(a => {
+    for (let i = 0; i < 2; i++)
+      cards.push({ key:a.id, spoken:a.label,
+        html:`<img src="ANIMAUX/${a.image}" style="width:72%;height:72%;object-fit:contain">` });
+  });
+  return shuffle(cards);
+}
+
+const matchG = { active:false, score:0, selected:null, cards:[], matched:0, pairs:0, speaking:false };
+
+function startMatchGame() {
+  fadeOutIntroAudio();
+  matchG.active = true; matchG.score = 0;
+  document.getElementById('match-score').textContent = '⭐ 0';
+  document.getElementById('match-overlay').classList.add('active');
+  nextMatchRound();
+}
+
+function stopMatchGame() {
+  matchG.active = false;
+  document.getElementById('match-overlay').classList.remove('active');
+}
+
+function nextMatchRound() {
+  if (!matchG.active) return;
+  matchG.selected = null; matchG.matched = 0; matchG.speaking = false;
+  const mode = pick(['color','shape','animal']);
+  let cards, instr;
+  if (mode === 'color') {
+    cards = genColorPairs(); instr = 'Associe les mêmes couleurs !';
+  } else if (mode === 'shape') {
+    cards = genShapePairs(); instr = 'Associe les mêmes formes !';
+  } else {
+    cards = genAnimalPairs(); instr = 'Trouve les deux pareils !';
+  }
+  matchG.cards = cards.map((c, i) => ({ ...c, idx:i, matched:false, el:null }));
+  matchG.pairs = matchG.cards.length / 2;
+  document.getElementById('match-instr').textContent = instr;
+  matchG.speaking = true;
+  speak(instr, 0.78, 1.2);
+  setTimeout(() => { matchG.speaking = false; }, Math.max(1800, instr.length * 75));
+  const grid = document.getElementById('match-grid');
+  grid.innerHTML = '';
+  matchG.cards.forEach((card, i) => {
+    const el = document.createElement('div');
+    el.className = 'match-card';
+    el.innerHTML = card.html;
+    el.addEventListener('touchend', e => { e.preventDefault(); onMatchTap(i); }, { passive:false });
+    el.addEventListener('click', () => onMatchTap(i));
+    grid.appendChild(el);
+    card.el = el;
+  });
+}
+
+function onMatchTap(idx) {
+  if (!matchG.active) return;
+  if (matchG.speaking) { playWait(); return; }
+  const card = matchG.cards[idx];
+  if (!card || card.matched) return;
+  if (matchG.selected === null) {
+    matchG.selected = idx;
+    card.el.classList.add('selected');
+    speak(card.spoken, 0.78, 1.1);
+    return;
+  }
+  if (matchG.selected === idx) {
+    card.el.classList.remove('selected');
+    matchG.selected = null;
+    return;
+  }
+  const first  = matchG.cards[matchG.selected];
+  const second = card;
+  first.el.classList.remove('selected');
+  matchG.selected = null;
+  if (first.key === second.key) {
+    first.matched  = true;
+    second.matched = true;
+    first.el.classList.add('matched-ok');
+    second.el.classList.add('matched-ok');
+    matchG.matched++;
+    speak(pickBravo(), 0.75, 1.35);
+    confettiRain();
+    if (matchG.matched === matchG.pairs) {
+      matchG.score++;
+      document.getElementById('match-score').textContent = `⭐ ${matchG.score}`;
+      speak('Bravo ! Tu as tout trouvé !', 0.75, 1.2);
+      setTimeout(nextMatchRound, 1800);
+    }
+  } else {
+    vibrateError();
+    first.el.classList.add('wrong-flash');
+    second.el.classList.add('wrong-flash');
+    setTimeout(() => {
+      first.el.classList.remove('wrong-flash');
+      second.el.classList.remove('wrong-flash');
+    }, 500);
+    speak('Cherche encore !', 0.78, 1.2);
+  }
+}
+
 /* ─── SERVICE WORKER ────────────────────────────────────── */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -3993,5 +4809,9 @@ function closePwaBanner(e) {
   if (banner) banner.classList.remove('show');
 }
 </script>
+
+<!-- Indicateur de verrouillage flottant (visible sur tous les écrans quand verrouillé) -->
+<div id="lock-floating" title="Maintenir 3s pour déverrouiller">🔒</div>
+
 </body>
 </html>
