@@ -884,51 +884,31 @@ body.game-locked .tab-bar     { pointer-events: none !important; opacity: 0.6; }
 .card-7 { background: linear-gradient(130deg, #FF9F0A, #FF6347); }
 .card-8 { background: linear-gradient(130deg, #30D158, #0A84FF); }
 
-/* ===== RANGÉE DÉFI — 3 éléments garantis visibles ===== */
-.challenge-row {
-  position: absolute;
-  left: 0; right: 0;
-  top: 50%;
-  transform: translateY(-55%); /* légèrement au-dessus du centre pour compenser l'instruction */
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-end;
-  gap: clamp(6px, 2vw, 14px);
-  padding: 0 clamp(8px, 2.5vw, 16px);
-  pointer-events: none;
+/* ===== ÉLÉMENTS EN MODE DÉFI — taille réduite pour tenir à 3 sur petit écran ===== */
+.in-challenge .balloon-body {
+  width: clamp(98px, 27vw, 136px);
+  height: clamp(120px, 33vw, 168px);
 }
-.challenge-row > * { pointer-events: auto; }
+.in-challenge .balloon-string { height: clamp(26px, 6vw, 42px); }
+.in-challenge .balloon-knot   { width: clamp(9px, 2.5vw, 13px); height: clamp(9px, 2.5vw, 13px); }
 
-/* Taille réduite dans un défi pour tenir à 3 */
-.challenge-row .balloon-wrap,
-.challenge-row .num-card-wrap,
-.challenge-row .animal-card-wrap { position: static !important; }
-
-.challenge-row .balloon-body {
-  width: clamp(88px, 26vw, 118px);
-  height: clamp(108px, 32vw, 146px);
-}
-.challenge-row .balloon-string { height: clamp(24px, 6vw, 38px); }
-.challenge-row .balloon-knot   { width: clamp(8px, 2.4vw, 12px); height: clamp(8px, 2.4vw, 12px); }
-
-.challenge-row .animal-card {
-  width: clamp(90px, 27vw, 122px);
-  height: clamp(100px, 29vw, 134px);
+.in-challenge.animal-card-wrap .animal-card {
+  width: clamp(104px, 28vw, 140px);
+  height: clamp(116px, 31vw, 155px);
   border-width: 4px;
   gap: 4px;
 }
-.challenge-row .animal-emoji {
-  width: clamp(60px, 17vw, 88px);
-  height: clamp(60px, 17vw, 88px);
+.in-challenge.animal-card-wrap .animal-emoji {
+  width: clamp(72px, 19vw, 100px);
+  height: clamp(72px, 19vw, 100px);
 }
-.challenge-row .animal-label-card { font-size: clamp(0.7rem, 2.6vw, 0.88rem); }
+.in-challenge.animal-card-wrap .animal-label-card { font-size: clamp(0.68rem, 2.4vw, 0.86rem); }
 
-.challenge-row .num-card-wrap,
-.challenge-row .num-card {
-  width: clamp(90px, 26vw, 118px);
-  height: clamp(90px, 26vw, 118px);
-  font-size: clamp(2.8rem, 9vw, 4.5rem);
+.in-challenge.num-card-wrap,
+.in-challenge .num-card {
+  width: clamp(98px, 27vw, 128px);
+  height: clamp(98px, 27vw, 128px);
+  font-size: clamp(3rem, 9.5vw, 5rem);
 }
 
 /* ===== ANIMAL CARDS (levels 7-8) ===== */
@@ -3760,17 +3740,20 @@ function newRound3() {
 
   speak(`Touche le ballon ${target.label} !`, 0.75, 1.22);
 
-  const row = document.createElement('div');
-  row.className = 'challenge-row';
-  sample.forEach((color) => {
+  const iW = Math.round(Math.min(gw() * 0.27, 136));
+  const iH = Math.round(iW * 1.22 + 46); // corps + nœud + ficelle
+  const positions = trianglePositions(iW, iH);
+  sample.forEach((color, i) => {
     const wrap = buildBalloon(color, true);
+    wrap.classList.add('in-challenge');
+    wrap.style.left = positions[i].x + 'px';
+    wrap.style.top  = positions[i].y + 'px';
     wrap.style.animationDuration = (2.2 + Math.random() * 1.4) + 's';
     wrap.style.animationDelay    = (Math.random() * 0.8) + 's';
-    wrap.style.setProperty('--rot', rand(-12, 12) + 'deg');
+    wrap.style.setProperty('--rot', rand(-18, 18) + 'deg');
     on(wrap, () => onLevel3Touch(wrap, color));
-    row.appendChild(wrap);
+    arena.appendChild(wrap);
   });
-  arena.appendChild(row);
 }
 
 function onLevel3Touch(wrap, color) {
@@ -3854,16 +3837,18 @@ function newNumberChallenge() {
 
   speak(`Touche le chiffre ${target.spoken} !`, 0.75, 1.22);
 
-  const row = document.createElement('div');
-  row.className = 'challenge-row';
-  sample.forEach((num) => {
+  const iW = Math.round(Math.min(gw() * 0.27, 128));
+  const positions = trianglePositions(iW, iW);
+  sample.forEach((num, i) => {
     const wrap = buildNumberCard(num);
+    wrap.classList.add('in-challenge');
+    wrap.style.left = positions[i].x + 'px';
+    wrap.style.top  = positions[i].y + 'px';
     wrap.style.animationDuration = (2.2 + Math.random() * 1.4) + 's';
     wrap.style.animationDelay    = (Math.random() * 0.8) + 's';
     on(wrap, () => onNumberChallengeTouch(wrap, num));
-    row.appendChild(wrap);
+    arena.appendChild(wrap);
   });
-  arena.appendChild(row);
 }
 
 function onNumberChallengeTouch(wrap, num) {
@@ -4030,16 +4015,19 @@ function newAnimalChallenge() {
 
   speak(`Touche ${target.art}${target.label} !`, 0.75, 1.22);
 
-  const row = document.createElement('div');
-  row.className = 'challenge-row';
-  sample.forEach((animal) => {
+  const iW = Math.round(Math.min(gw() * 0.28, 140));
+  const iH = Math.round(iW * 1.1);
+  const positions = trianglePositions(iW, iH);
+  sample.forEach((animal, i) => {
     const wrap = buildAnimalCard(animal, true);
+    wrap.classList.add('in-challenge');
+    wrap.style.left = positions[i].x + 'px';
+    wrap.style.top  = positions[i].y + 'px';
     wrap.style.animationDuration = (2.2 + Math.random() * 1.4) + 's';
     wrap.style.animationDelay    = (Math.random() * 0.8) + 's';
     on(wrap, () => onAnimalChallengeTouch(wrap, animal));
-    row.appendChild(wrap);
+    arena.appendChild(wrap);
   });
-  arena.appendChild(row);
 }
 
 function onAnimalChallengeTouch(wrap, animal) {
@@ -4444,6 +4432,33 @@ function spreadPositions(n, itemW = 166, itemH = 256) {
       out.push(p);
   }
   return out;
+}
+
+/* ─── TRIANGLE POSITIONS (défis 3 éléments) ─────────────── */
+/* Arrange 3 éléments en triangle : 1 en haut, 2 en bas.
+   Tailles réduites transmises pour garantir le fit sur petit écran. */
+function trianglePositions(iW, iH) {
+  const W   = gw(), H = gh();
+  const pad = 12;
+  const minY = 95;
+  const maxY = H - iH - 130;          // laisse place herbe + instruction
+  const midY = (minY + maxY) / 2;
+
+  // Ancres : haut-centre, bas-gauche, bas-droite — avec jitter léger
+  return [
+    {                                               // haut, légèrement centré
+      x: clamp(W/2 - iW/2 + rand(-W*0.1, W*0.1), pad, W - iW - pad),
+      y: clamp(minY + rand(0, (midY-minY)*0.4),   minY, midY - iH)
+    },
+    {                                               // bas gauche
+      x: clamp(pad + rand(0, W*0.12),              pad, W/2 - iW - 4),
+      y: clamp(midY + rand(-15, 20),               midY, maxY)
+    },
+    {                                               // bas droite
+      x: clamp(W - iW - pad + rand(-W*0.12, 0),   W/2 + 4, W - iW - pad),
+      y: clamp(midY + rand(-15, 20),               midY, maxY)
+    },
+  ];
 }
 
 /* ─── VIEWPORT HELPERS ──────────────────────────────────── */
