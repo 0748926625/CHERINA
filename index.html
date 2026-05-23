@@ -2257,7 +2257,7 @@ body.game-locked .tab-btn[data-tab="album"] { pointer-events: none; opacity: .5;
     <div class="don-pay wave" onclick="donCopy('wave')">
       <div class="don-pay-name">📱 Wave</div>
       <div class="don-pay-num">+225 07 48 92 66 25</div>
-      <div class="don-pay-hint" id="don-wave-hint">Toucher pour ouvrir Wave</div>
+      <div class="don-pay-hint" id="don-wave-hint">Enregistre le contact + ouvre Wave</div>
     </div>
     <div class="don-pay orange" onclick="donCopy('orange')">
       <div class="don-pay-name">🟠 Orange Money</div>
@@ -5827,15 +5827,42 @@ function donOpenWave() {
   // Copier "500" dans le presse-papier — l'utilisateur peut le coller dans le champ montant
   _donCopyText(DON_AMOUNT, hint, '✅ Montant 500 copié — collez dans Wave !');
 
-  // HTTPS App Link — Wave a enregistré pay.wave.com comme domaine vérifié dans son APK.
-  // Android ouvre l'app directement, sans étape Play Store.
-  // iOS : si Wave a configuré universal links, idem ; sinon ouvre le site web.
-  const a = document.createElement('a');
-  a.href = `https://pay.wave.com/send?phone=${encodeURIComponent(DON_PHONE)}&amount=${DON_AMOUNT}&currency=XOF`;
-  a.target = '_blank';
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => a.remove(), 200);
+  const hint = document.getElementById('don-wave-hint');
+
+  // Étape 1 — télécharger le contact vCard (.vcf)
+  // Android propose automatiquement d'ajouter le contact au répertoire
+  const vcard = [
+    'BEGIN:VCARD',
+    'VERSION:3.0',
+    'FN:Chérina Soutien',
+    'TEL;TYPE=CELL:' + DON_PHONE,
+    'NOTE:Don Chérina App – ' + DON_AMOUNT + ' FCFA',
+    'END:VCARD'
+  ].join('\r\n');
+  const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' });
+  const vcfUrl = URL.createObjectURL(blob);
+  const dlA = document.createElement('a');
+  dlA.href = vcfUrl;
+  dlA.download = 'cherina-don.vcf';
+  document.body.appendChild(dlA);
+  dlA.click();
+  setTimeout(() => { dlA.remove(); URL.revokeObjectURL(vcfUrl); }, 600);
+
+  // Étape 2 — ouvrir Wave après un court délai
+  // (App Link HTTPS : si Wave a vérifié pay.wave.com, s'ouvre sans Play Store)
+  setTimeout(() => {
+    const wA = document.createElement('a');
+    wA.href = 'https://pay.wave.com/';
+    wA.target = '_blank';
+    document.body.appendChild(wA);
+    wA.click();
+    setTimeout(() => wA.remove(), 200);
+  }, 900);
+
+  if (hint) {
+    hint.textContent = '📱 Contact enregistré → Wave s\'ouvre…';
+    setTimeout(() => { hint.textContent = 'Enregistre le contact + ouvre Wave'; }, 4500);
+  }
 }
 
 function donOpenOrange() {
