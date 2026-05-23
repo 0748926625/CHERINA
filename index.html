@@ -813,7 +813,7 @@ body.game-locked .tab-bar     { pointer-events: none !important; opacity: 0.6; }
 /* ===== TABS (home) ===== */
 .tab-bar {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 4px;
   background: rgba(255,255,255,0.15);
   border-radius: 20px;
@@ -1573,14 +1573,14 @@ body.game-locked .tab-bar     { pointer-events: none !important; opacity: 0.6; }
 /* Paysage ou très courts (< 520px) */
 @media (max-height: 520px) {
   .home-logo, .home-title, .home-sub { display: none; }
-  .tab-bar { grid-template-columns: repeat(6, 1fr); border-radius: 50px; }
+  .tab-bar { grid-template-columns: repeat(7, 1fr); border-radius: 50px; }
   .tab-btn { flex-direction: row; gap: 4px; padding: 7px 6px; }
   .piano-key { height: 90px; }
 }
 
 /* Tablettes et grands écrans */
 @media (min-width: 768px) {
-  .tab-bar { grid-template-columns: repeat(6, 1fr); border-radius: 50px; }
+  .tab-bar { grid-template-columns: repeat(7, 1fr); border-radius: 50px; }
   .tab-btn { flex-direction: row; gap: 6px; }
   .balloon-body { width: 162px; height: 200px; }
   .balloon-name { font-size: 1.25rem; }
@@ -1625,24 +1625,83 @@ body.game-locked .tab-bar     { pointer-events: none !important; opacity: 0.6; }
   transform: translateX(-50%) translateY(4px);
   box-shadow: 0 2px 0 rgba(0,0,0,0.25), 0 4px 10px rgba(79,70,229,0.3);
 }
-#pwa-install-close {
-  background: rgba(255,255,255,0.25);
-  border: none;
-  border-radius: 50%;
-  width: 26px;
-  height: 26px;
-  font-size: 0.85rem;
-  cursor: pointer;
+/* ===== BOUTON DON ===== */
+#don-btn {
+  position: fixed;
+  bottom: max(env(safe-area-inset-bottom, 0px), 18px);
+  right: 18px;
+  z-index: 998;
+  background: linear-gradient(135deg, #FF6B35, #E91E8C);
   color: #fff;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
+  border: none;
+  border-radius: 50px;
+  padding: 11px 18px;
   font-family: inherit;
-  font-weight: 900;
-  line-height: 1;
-  transition: background 0.15s;
+  font-size: clamp(0.78rem, 3vw, 0.9rem);
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(233,30,140,0.4);
+  white-space: nowrap;
+  transition: transform 0.15s;
 }
-#pwa-install-close:active { background: rgba(255,255,255,0.45); }
+#don-btn:active { transform: scale(0.93); }
+
+#don-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 1200;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+#don-modal.on { display: flex; }
+.don-box {
+  background: #fff;
+  border-radius: 26px;
+  padding: 28px 22px 22px;
+  max-width: 320px;
+  width: 100%;
+  text-align: center;
+}
+.don-title { font-size: 19px; font-weight: 800; color: #2C1810; margin-bottom: 6px; }
+.don-sub { font-size: 13px; color: #888; line-height: 1.6; margin-bottom: 18px; }
+.don-amount {
+  background: #FFF3EE;
+  border-radius: 14px;
+  padding: 12px;
+  font-size: 24px;
+  font-weight: 900;
+  color: #FF6B35;
+  margin-bottom: 14px;
+}
+.don-pay {
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.don-pay:active { transform: scale(0.97); }
+.don-pay.wave   { background: linear-gradient(135deg, #2DD4BF, #0EA5E9); }
+.don-pay.orange { background: linear-gradient(135deg, #FB923C, #EA580C); }
+.don-pay-name { color: #fff; font-weight: 800; font-size: 14px; }
+.don-pay-num  { color: #fff; font-size: 17px; font-weight: 700; margin: 5px 0 3px; letter-spacing: 0.5px; }
+.don-pay-hint { color: rgba(255,255,255,.75); font-size: 11px; }
+.don-close {
+  background: #f0f0f0;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 28px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  color: #555;
+}
+.don-close:active { background: #e4e4e4; }
 
 /* ===== COULEURS CARTES EXTRA ===== */
 .card-corps    { background: linear-gradient(130deg, #F471B5, #BE185D); }
@@ -1805,38 +1864,23 @@ body.game-locked .tab-bar     { pointer-events: none !important; opacity: 0.6; }
 /* ══════════════════════════════════════════════════════
    ALBUM FAMILIAL
 ══════════════════════════════════════════════════════ */
-#album-fab {
-  position: fixed; bottom: 28px; left: 20px; z-index: 400;
-  background: linear-gradient(135deg,#FF6B35,#E91E8C);
-  border: none; border-radius: 30px; color: #fff;
-  font-family: 'Nunito', cursive;
-  padding: 11px 16px; font-size: 14px; font-weight: 800;
-  cursor: pointer; display: flex; align-items: center; gap: 7px;
-  box-shadow: 0 4px 18px rgba(255,107,53,.5);
-  animation: albumFabPulse 2.2s ease-in-out infinite;
-  transition: transform .15s;
-}
-#album-fab:active { transform: scale(.92) rotate(2deg); }
-@keyframes albumFabPulse {
-  0%,100% { box-shadow: 0 4px 18px rgba(255,107,53,.5); }
-  50%      { box-shadow: 0 4px 28px rgba(255,107,53,.75), 0 0 0 9px rgba(255,107,53,.12); }
-}
-body.game-locked #album-fab { pointer-events: none; opacity: .5; }
+body.game-locked .tab-btn[data-tab="album"] { pointer-events: none; opacity: .5; }
 
 /* ── Overlay plein écran ── */
 #album-overlay {
   display: none; position: fixed; inset: 0; z-index: 600;
   overflow: hidden; font-family: system-ui,'Segoe UI',sans-serif;
   background: #FFF8E7; touch-action: manipulation;
+  flex-direction: column;
 }
-#album-overlay.open { display: block; animation: alFadeIn .25s ease; }
+#album-overlay.open { display: flex; animation: alFadeIn .25s ease; }
 @keyframes alFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 
 /* ── Bandeau kente ── */
 #album-overlay .al-kente { height:9px; background:repeating-linear-gradient(90deg,#FF6B35 0 20px,#FFC947 20px 40px,#4CAF50 40px 60px,#9B59B6 60px 80px); }
 
 /* ── Screens internes ── */
-#album-overlay .al-scr { display:none; min-height:100vh; flex-direction:column; }
+#album-overlay .al-scr { display:none; flex:1; flex-direction:column; overflow:hidden; }
 #album-overlay .al-scr.on { display:flex; animation:alFadeIn .25s ease; }
 
 /* ── Header ── */
@@ -1850,7 +1894,7 @@ body.game-locked #album-fab { pointer-events: none; opacity: .5; }
 #album-overlay .al-hbtns { display:flex; gap:8px; }
 
 /* ── Contenu ── */
-#album-overlay .al-cnt { flex:1; padding:22px 14px; overflow-y:auto; }
+#album-overlay .al-cnt { flex:1; padding:22px 14px; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 
 /* ── Grille membres ── */
 #album-overlay .al-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:13px; padding-bottom:110px; }
@@ -1941,8 +1985,8 @@ body.game-locked #album-fab { pointer-events: none; opacity: .5; }
 #album-overlay .al-orline::before, #album-overlay .al-orline::after { content:''; flex:1; height:1px; background:#eee; }
 
 /* ── Avatar grid ── */
-#album-overlay .al-avgrid { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; margin-bottom:20px; }
-#album-overlay .al-avopt { aspect-ratio:1; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; cursor:pointer; border:4px solid transparent; transition:all .2s; box-shadow:0 3px 9px rgba(0,0,0,.1); }
+#album-overlay .al-avgrid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:16px; }
+#album-overlay .al-avopt { aspect-ratio:1; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer; border:3px solid transparent; transition:all .2s; box-shadow:0 2px 7px rgba(0,0,0,.1); }
 #album-overlay .al-avopt.sel { border-color:#FF6B35; transform:scale(1.14); }
 #album-overlay .al-avopt:active { transform:scale(.87); }
 
@@ -2061,6 +2105,7 @@ body.game-locked #album-fab { pointer-events: none; opacity: .5; }
     <button class="tab-btn"        data-tab="piano"   onclick="switchTab(this)"><span class="tab-icon">🎹</span><span class="tab-lbl">Piano</span></button>
     <button class="tab-btn"        data-tab="formes"  onclick="switchTab(this)"><span class="tab-icon">🔷</span><span class="tab-lbl">Formes</span></button>
     <button class="tab-btn"        data-tab="corps"   onclick="switchTab(this)"><span class="tab-icon">🧍</span><span class="tab-lbl">Corps</span></button>
+    <button class="tab-btn"        data-tab="album"   onclick="switchTab(this)"><span class="tab-icon">👨‍👩‍👧</span><span class="tab-lbl">Famille</span></button>
   </div>
 
   <!-- Couleurs -->
@@ -2197,8 +2242,31 @@ body.game-locked #album-fab { pointer-events: none; opacity: .5; }
 <button id="pwa-install-banner" onclick="triggerPwaInstall()">
   <span>📲</span>
   <span>Installer l'application</span>
-  <button id="pwa-install-close" onclick="closePwaBanner(event)">✕</button>
 </button>
+
+<!-- Bouton don -->
+<button id="don-btn" onclick="document.getElementById('don-modal').classList.add('on')">💝 Soutenir</button>
+
+<!-- Modal don -->
+<div id="don-modal" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="don-box">
+    <div style="font-size:32px;margin-bottom:6px">💝</div>
+    <div class="don-title">Soutenir Chérina</div>
+    <div class="don-sub">Votre soutien nous aide à améliorer<br>l'app pour vos tout-petits 🌟</div>
+    <div class="don-amount">500 F CFA</div>
+    <div class="don-pay wave" onclick="donCopy('wave')">
+      <div class="don-pay-name">📱 Wave</div>
+      <div class="don-pay-num">+225 07 48 92 66 25</div>
+      <div class="don-pay-hint" id="don-wave-hint">Toucher pour ouvrir Wave</div>
+    </div>
+    <div class="don-pay orange" onclick="donCopy('orange')">
+      <div class="don-pay-name">🟠 Orange Money</div>
+      <div class="don-pay-num">+225 07 48 92 66 25</div>
+      <div class="don-pay-hint" id="don-orange-hint">Toucher pour envoyer via Orange Money</div>
+    </div>
+    <button class="don-close" onclick="document.getElementById('don-modal').classList.remove('on')">Fermer</button>
+  </div>
+</div>
 
 <!-- ======================== GAME ======================== -->
 <div id="game" class="screen">
@@ -3041,11 +3109,25 @@ let busy    = false;
 let target  = null;
 
 /* ─── TAB SWITCHER ──────────────────────────────────────── */
+let alPrevTab = 'colors';
+
 function switchTab(btn) {
+  const prevBtn = document.querySelector('.tab-btn.active');
+  const prevTab = prevBtn ? prevBtn.dataset.tab : 'colors';
+
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   const tab = btn.dataset.tab;
+
+  if (tab === 'album') {
+    alPrevTab = prevTab !== 'album' ? prevTab : 'colors';
+    stopPianoGame(); stopCatGame(); stopBodyGame(); stopShapesGame(); stopCompareGame(); stopMatchGame();
+    document.getElementById('home').classList.remove('piano-mode');
+    alOpen();
+    return;
+  }
+
   document.getElementById('tab-' + tab).classList.add('active');
 
   const home = document.getElementById('home');
@@ -5144,6 +5226,8 @@ window.alImportAlbum    = alImportAlbum;
 window.alDoReset        = alDoReset;
 window.alTryStartGame   = alTryStartGame;
 window.alNewRound       = alNewRound;
+window.alTapCard        = alTapCard;
+window.alOpenMember     = alOpenMember;
 window.alReplayInstr    = alReplayInstr;
 window.alPickAv         = alPickAv;
 window.alPickRole       = alPickRole;
@@ -5158,6 +5242,12 @@ function alOpen(){
 function alClose(){
   alStopAudio();
   document.getElementById('album-overlay').classList.remove('open');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const restoreBtn = document.querySelector(`.tab-btn[data-tab="${alPrevTab}"]`);
+  if (restoreBtn) restoreBtn.classList.add('active');
+  const restorePanel = document.getElementById('tab-' + alPrevTab);
+  if (restorePanel) restorePanel.classList.add('active');
 }
 
 // ── Stockage ─────────────────────────────────────────────
@@ -5684,20 +5774,30 @@ if ('serviceWorker' in navigator) {
 /* ─── PWA INSTALL PROMPT ────────────────────────────────── */
 let _pwaPrompt = null;
 
+(function(){
+  // Déjà installé = mode standalone → cacher le bouton
+  const already = window.matchMedia('(display-mode: standalone)').matches
+                  || window.navigator.standalone === true;
+  if (already) {
+    const b = document.getElementById('pwa-install-banner');
+    const d = document.getElementById('don-btn');
+    if (b) b.style.display = 'none';
+    // don-btn reste visible même si installé
+    return;
+  }
+})();
+
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   _pwaPrompt = e;
   const banner = document.getElementById('pwa-install-banner');
-  if (banner) {
-    /* Affiche la bannière 3 s après le chargement */
-    setTimeout(() => banner.classList.add('show'), 3000);
-  }
+  if (banner) banner.classList.add('show'); // affichage immédiat, sans délai
 });
 
 window.addEventListener('appinstalled', () => {
   _pwaPrompt = null;
   const banner = document.getElementById('pwa-install-banner');
-  if (banner) banner.classList.remove('show');
+  if (banner) { banner.classList.remove('show'); banner.style.display = 'none'; }
 });
 
 function triggerPwaInstall() {
@@ -5706,25 +5806,77 @@ function triggerPwaInstall() {
   _pwaPrompt.userChoice.then(() => {
     _pwaPrompt = null;
     const banner = document.getElementById('pwa-install-banner');
-    if (banner) banner.classList.remove('show');
+    if (banner) { banner.classList.remove('show'); banner.style.display = 'none'; }
   });
 }
 
-function closePwaBanner(e) {
-  e.stopPropagation();
-  const banner = document.getElementById('pwa-install-banner');
-  if (banner) banner.classList.remove('show');
+/* ─── DON ────────────────────────────────────────────────── */
+const DON_PHONE     = '+2250748926625';
+const DON_PHONE_CI  = '0748926625'; // sans indicatif, pour USSD Orange
+const DON_AMOUNT    = '500';
+
+function donCopy(type) {
+  if (type === 'wave')   { donOpenWave();   return; }
+  if (type === 'orange') { donOpenOrange(); return; }
+}
+
+function donOpenWave() {
+  const hint = document.getElementById('don-wave-hint');
+  // Tente d'ouvrir l'app Wave via son scheme (non documenté mais fonctionnel si installé)
+  const deepLink = `wave://send?phone=${encodeURIComponent(DON_PHONE)}&amount=${DON_AMOUNT}`;
+  const storeUrl = /iPhone|iPad|iPod/i.test(navigator.userAgent)
+    ? 'https://apps.apple.com/sn/app/wave-mobile-money/id1523884528'
+    : 'https://play.google.com/store/apps/details?id=com.wave.personal';
+
+  // Détection : si la page perd le focus → l'app s'est ouverte
+  let appOpened = false;
+  const onBlur = () => { appOpened = true; };
+  window.addEventListener('blur', onBlur, { once: true });
+
+  window.location.href = deepLink;
+
+  setTimeout(() => {
+    window.removeEventListener('blur', onBlur);
+    if (!appOpened) {
+      // App non installée → rediriger vers le store + copier le numéro
+      if (hint) hint.textContent = '📲 Ouverture du store Wave…';
+      setTimeout(() => window.open(storeUrl, '_blank'), 200);
+      donCopyNum(hint);
+    } else {
+      if (hint) { hint.textContent = '✅ Wave ouvert !'; setTimeout(() => { hint.textContent = 'Toucher pour ouvrir Wave'; }, 2500); }
+    }
+  }, 1200);
+}
+
+function donOpenOrange() {
+  const hint = document.getElementById('don-orange-hint');
+  // USSD Orange Money CI : *144*1*numéro*montant#
+  const ussd = `*144*1*${DON_PHONE_CI}*${DON_AMOUNT}%23`;
+  window.location.href = `tel:${ussd}`;
+  // Copie le numéro en parallèle si USSD échoue (iOS)
+  setTimeout(() => donCopyNum(hint), 800);
+}
+
+function donCopyNum(hint) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(DON_PHONE).then(() => {
+      if (hint) { hint.textContent = '✅ Numéro copié !'; setTimeout(() => { hint.textContent = 'Toucher pour ouvrir'; }, 2500); }
+    }).catch(() => _donFallbackCopy(hint));
+  } else { _donFallbackCopy(hint); }
+}
+function _donFallbackCopy(hint) {
+  const ta = document.createElement('textarea');
+  ta.value = DON_PHONE; ta.style.cssText = 'position:fixed;opacity:0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); }
+  catch(e) {}
+  document.body.removeChild(ta);
+  if (hint) { hint.textContent = '✅ Numéro copié !'; setTimeout(() => { hint.textContent = 'Toucher pour ouvrir'; }, 2500); }
 }
 </script>
 
 <!-- Indicateur de verrouillage flottant (visible sur tous les écrans quand verrouillé) -->
 <div id="lock-floating" title="Maintenir 3s pour déverrouiller">🔒</div>
-
-<!-- ══ BOUTON FLOTTANT ALBUM ══ -->
-<button id="album-fab" onclick="alOpen()">
-  <span style="font-size:22px">👨‍👩‍👧</span>
-  <span>Ma Famille</span>
-</button>
 
 <!-- inputs file cachés pour photos -->
 <input type="file" id="al-file-cam"     accept="image/*" capture="environment" style="display:none">
