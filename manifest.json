@@ -1,0 +1,19 @@
+{
+  "name": "Chérina apprend",
+  "short_name": "Chérina",
+  "description": "Jeu éducatif — couleurs, chiffres, animaux",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#4F46E5",
+  "theme_color": "#4F46E5",
+  "orientation": "portrait-primary",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "ch%C3%A9rina.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

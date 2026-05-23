@@ -1,0 +1,30 @@
+# Clés SSL (ne jamais versionner !)
+cert.pem
+key.pem
+
+# Scripts serveur local (inutiles en ligne)
+server_https.py
+serveur_local.py
+gen_cert.py
+build_app.py
+
+# Logs
+*.log
+*.txt
+build_log.txt
+build_test.txt
+
+# Projet Expo / React Native (trop lourd, non nécessaire pour la web app)
+cherina-expo/
+
+# Fichier audio doublon (avec @ au début)
+@les_couleurs_et_les_animaux.mp3.mpeg
+
+# Anciens fichiers HTML (remplacés par index.html)
+ballons-couleurs-mobile.html
+Cherina-App.html
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
