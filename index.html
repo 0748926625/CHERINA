@@ -1823,7 +1823,7 @@ body.game-locked .tab-bar     { pointer-events: none !important; opacity: 0.6; }
   grid-template-columns: repeat(3, 1fr);
   gap: clamp(8px,2.5vw,14px);
   width: 100%;
-  max-width: 360px;
+  max-width: 480px;
   margin: auto 0;
 }
 .match-card {
@@ -2239,7 +2239,7 @@ body.game-locked .tab-btn[data-tab="album"] { pointer-events: none; opacity: .5;
 <div id="color-flash"></div>
 
 <!-- Bannière d'installation PWA -->
-<button id="pwa-install-banner" onclick="triggerPwaInstall()">
+<button id="pwa-install-banner" class="show" onclick="triggerPwaInstall()">
   <span>📲</span>
   <span>Installer l'application</span>
 </button>
@@ -3770,7 +3770,10 @@ function bodyTapHandler(e) {
     const wrap = document.getElementById('bg-figure-wrap');
     wrap.classList.add('bg-shake');
     setTimeout(() => wrap.classList.remove('bg-shake'), 450);
-    speak(`Non ! Touche ${target.spoken} !`, 0.75, 1.1);
+    vibrateError();
+    const hitPart = BODY_PARTS.find(p => p.id === hit);
+    const hitName = hitPart ? hitPart.spoken : hit;
+    speak(`Non, c'est ${hitName} ! Touche ${target.spoken} !`, 0.75, 1.1);
   }
 }
 
@@ -5067,7 +5070,70 @@ function genAnimalPairs() {
   return shuffle(cards);
 }
 
-const matchG = { active:false, score:0, selected:null, cards:[], matched:0, pairs:0, speaking:false };
+/* Éléments pour le jeu de comptage */
+const COUNT_ITEMS = [
+  { id:'etoile',   spoken:'étoile',   type:'shape',  hex:'#FFD60A', fem:true  },
+  { id:'carre',    spoken:'carré',    type:'shape',  hex:'#007AFF', fem:false },
+  { id:'cercle',   spoken:'cercle',   type:'shape',  hex:'#FF3B30', fem:false },
+  { id:'triangle', spoken:'triangle', type:'shape',  hex:'#30D158', fem:false },
+  { id:'losange',  spoken:'losange',  type:'shape',  hex:'#BF5AF2', fem:false },
+  { id:'lion',     spoken:'lion',     type:'animal', emoji:'🦁',   fem:false },
+  { id:'chat',     spoken:'chat',     type:'animal', emoji:'🐱',   fem:false },
+  { id:'chien',    spoken:'chien',    type:'animal', emoji:'🐕',   fem:false },
+  { id:'girafe',   spoken:'girafe',   type:'animal', emoji:'🦒',   fem:true  },
+  { id:'singe',    spoken:'singe',    type:'animal', emoji:'🐒',   fem:false },
+];
+
+function pluralFrMatch(w) {
+  if (/eau$/i.test(w)) return w + 'x';
+  if (/[sxz]$/i.test(w)) return w;
+  return w + 's';
+}
+
+const _COUNT_NUMS = ['un','deux','trois'];
+
+/* Corrige la prononciation TTS fr-FR : le 's' de "triangles" fait basculer en anglais */
+function fixSpokenFr(t) {
+  return t.replace(/\btriangles\b/gi, 'triangle');
+}
+
+function countCardHtml(n, item) {
+  const parts = [];
+  if (item.type === 'shape') {
+    const size = n === 1 ? 72 : n === 2 ? 52 : 38;
+    const shapePaths = {
+      etoile:   `<polygon points="50,5 61,36 96,36 68,57 79,92 50,70 21,92 32,57 4,36 39,36" fill="${item.hex}"/>`,
+      carre:    `<rect x="8" y="8" width="84" height="84" rx="8" fill="${item.hex}"/>`,
+      cercle:   `<circle cx="50" cy="50" r="42" fill="${item.hex}"/>`,
+      triangle: `<polygon points="50,6 92,90 8,90" fill="${item.hex}"/>`,
+      losange:  `<polygon points="50,5 95,50 50,95 5,50" fill="${item.hex}"/>`,
+    };
+    for (let i = 0; i < n; i++)
+      parts.push(`<svg style="width:${size}px;height:${size}px;flex-shrink:0" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${shapePaths[item.id]||''}</svg>`);
+  } else {
+    const fs = n === 1 ? '3.2rem' : n === 2 ? '2.5rem' : '1.9rem';
+    for (let i = 0; i < n; i++)
+      parts.push(`<span style="font-size:${fs};line-height:1.15">${item.emoji}</span>`);
+  }
+  if (n === 3) {
+    // Disposition pyramidale : 2 en haut, 1 centré en bas
+    return `<div style="display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:100%;height:100%;padding:4px"><div style="display:flex;gap:6px">${parts[0]}${parts[1]}</div><div>${parts[2]}</div></div>`;
+  }
+  return `<div style="display:flex;justify-content:center;align-items:center;gap:${n>1?'7px':'0'};width:100%;height:100%;padding:4px">${parts.join('')}</div>`;
+}
+
+function genCountingPairs(item) {
+  const cards = [];
+  [1, 2, 3].forEach(n => {
+    const num = n === 1 ? (item.fem ? 'une' : 'un') : _COUNT_NUMS[n-1];
+    const spoken = `${num} ${n > 1 ? pluralFrMatch(item.spoken) : item.spoken}`;
+    for (let i = 0; i < 2; i++)
+      cards.push({ key: String(n), spoken, html: countCardHtml(n, item) });
+  });
+  return shuffle(cards);
+}
+
+const matchG = { active:false, score:0, selected:null, cards:[], matched:0, pairs:0, speaking:false, currentItem:null };
 
 function startMatchGame() {
   fadeOutIntroAudio();
@@ -5085,20 +5151,16 @@ function stopMatchGame() {
 function nextMatchRound() {
   if (!matchG.active) return;
   matchG.selected = null; matchG.matched = 0; matchG.speaking = false;
-  const mode = pick(['color','shape','animal']);
-  let cards, instr;
-  if (mode === 'color') {
-    cards = genColorPairs(); instr = 'Associe les mêmes couleurs !';
-  } else if (mode === 'shape') {
-    cards = genShapePairs(); instr = 'Associe les mêmes formes !';
-  } else {
-    cards = genAnimalPairs(); instr = 'Trouve les deux pareils !';
-  }
+  const pool = COUNT_ITEMS.filter(c => !matchG.currentItem || c.id !== matchG.currentItem.id);
+  const item = pick(pool);
+  matchG.currentItem = item;
+  const cards = genCountingPairs(item);
+  const instr = `Compte les ${pluralFrMatch(item.spoken)} !`;
   matchG.cards = cards.map((c, i) => ({ ...c, idx:i, matched:false, el:null }));
   matchG.pairs = matchG.cards.length / 2;
   document.getElementById('match-instr').textContent = instr;
   matchG.speaking = true;
-  speak(instr, 0.78, 1.2);
+  speak(fixSpokenFr(instr), 0.78, 1.2);
   setTimeout(() => { matchG.speaking = false; }, Math.max(1800, instr.length * 75));
   const grid = document.getElementById('match-grid');
   grid.innerHTML = '';
@@ -5121,7 +5183,7 @@ function onMatchTap(idx) {
   if (matchG.selected === null) {
     matchG.selected = idx;
     card.el.classList.add('selected');
-    speak(card.spoken, 0.78, 1.1);
+    speak(fixSpokenFr(card.spoken), 0.78, 1.1);
     return;
   }
   if (matchG.selected === idx) {
@@ -5139,13 +5201,16 @@ function onMatchTap(idx) {
     first.el.classList.add('matched-ok');
     second.el.classList.add('matched-ok');
     matchG.matched++;
-    speak(pickBravo(), 0.75, 1.35);
     confettiRain();
+    speak(fixSpokenFr(first.spoken), 0.75, 1.2);
     if (matchG.matched === matchG.pairs) {
       matchG.score++;
       document.getElementById('match-score').textContent = `⭐ ${matchG.score}`;
-      speak('Bravo ! Tu as tout trouvé !', 0.75, 1.2);
-      setTimeout(nextMatchRound, 1800);
+      setTimeout(() => speak(pickBravo(), 0.75, 1.35), 750);
+      setTimeout(() => speak('Bravo ! Tu as tout compté !', 0.75, 1.2), 1600);
+      setTimeout(nextMatchRound, 3200);
+    } else {
+      setTimeout(() => speak(pickBravo(), 0.75, 1.35), 750);
     }
   } else {
     vibrateError();
@@ -5801,13 +5866,21 @@ window.addEventListener('appinstalled', () => {
 });
 
 function triggerPwaInstall() {
-  if (!_pwaPrompt) return;
-  _pwaPrompt.prompt();
-  _pwaPrompt.userChoice.then(() => {
-    _pwaPrompt = null;
-    const banner = document.getElementById('pwa-install-banner');
-    if (banner) { banner.classList.remove('show'); banner.style.display = 'none'; }
-  });
+  if (_pwaPrompt) {
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(() => {
+      _pwaPrompt = null;
+      const banner = document.getElementById('pwa-install-banner');
+      if (banner) { banner.classList.remove('show'); banner.style.display = 'none'; }
+    });
+    return;
+  }
+  // Pas de prompt natif (Safari, Firefox…) → guide manuel
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const msg = isIos
+    ? "Sur iPhone : appuyez sur ⬆️ puis « Sur l'écran d'accueil »"
+    : "Appuyez sur ⋮ ou ⊕ dans votre navigateur, puis « Ajouter à l'écran d'accueil »";
+  alert(msg);
 }
 
 /* ─── DON ────────────────────────────────────────────────── */
@@ -5841,8 +5914,15 @@ function donOpenWave() {
   dlA.click();
   setTimeout(() => { dlA.remove(); URL.revokeObjectURL(vcfUrl); }, 600);
 
-  // Étape 2 — ouvrir Wave (dans le contexte du geste utilisateur)
-  window.open('https://pay.wave.com/', '_blank');
+  // Étape 2 — ouvrir Wave
+  const isAndroid = /android/i.test(navigator.userAgent);
+  if (isAndroid) {
+    // Lance Wave directement (écran principal), sans passer par pay.wave.com
+    const fallback = encodeURIComponent('https://play.google.com/store/apps/details?id=com.waveapp.android');
+    window.location.href = `intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.waveapp.android;S.browser_fallback_url=${fallback};end`;
+  } else {
+    window.open('https://pay.wave.com/', '_blank');
+  }
 
   if (hint) {
     hint.textContent = '📱 Contact enregistré → Wave s\'ouvre…';
