@@ -893,16 +893,16 @@ body.game-locked .tab-bar     { pointer-events: none !important; opacity: 0.6; }
 .in-challenge .balloon-knot   { width: clamp(9px, 2.5vw, 13px); height: clamp(9px, 2.5vw, 13px); }
 
 .in-challenge.animal-card-wrap .animal-card {
-  width: clamp(104px, 28vw, 140px);
-  height: clamp(116px, 31vw, 155px);
+  width: clamp(118px, 32vw, 162px);
+  height: clamp(132px, 35vw, 182px);
   border-width: 4px;
-  gap: 4px;
+  gap: 5px;
 }
 .in-challenge.animal-card-wrap .animal-emoji {
-  width: clamp(72px, 19vw, 100px);
-  height: clamp(72px, 19vw, 100px);
+  width: clamp(86px, 23vw, 124px);
+  height: clamp(86px, 23vw, 124px);
 }
-.in-challenge.animal-card-wrap .animal-label-card { font-size: clamp(0.68rem, 2.4vw, 0.86rem); }
+.in-challenge.animal-card-wrap .animal-label-card { font-size: clamp(0.72rem, 2.6vw, 0.92rem); }
 
 .in-challenge.num-card-wrap,
 .in-challenge .num-card {
@@ -3741,8 +3741,8 @@ function newRound3() {
   speak(`Touche le ballon ${target.label} !`, 0.75, 1.22);
 
   const iW = Math.round(Math.min(gw() * 0.27, 136));
-  const iH = Math.round(iW * 1.22 + 46); // corps + nœud + ficelle
-  const positions = trianglePositions(iW, iH);
+  const iH = Math.round(iW * 1.22 + 46);
+  const positions = challengeSpread(iW, iH);
   sample.forEach((color, i) => {
     const wrap = buildBalloon(color, true);
     wrap.classList.add('in-challenge');
@@ -3837,8 +3837,8 @@ function newNumberChallenge() {
 
   speak(`Touche le chiffre ${target.spoken} !`, 0.75, 1.22);
 
-  const iW = Math.round(Math.min(gw() * 0.27, 128));
-  const positions = trianglePositions(iW, iW);
+  const iW = Math.round(Math.min(gw() * 0.28, 130));
+  const positions = challengeSpread(iW, iW);
   sample.forEach((num, i) => {
     const wrap = buildNumberCard(num);
     wrap.classList.add('in-challenge');
@@ -4015,9 +4015,9 @@ function newAnimalChallenge() {
 
   speak(`Touche ${target.art}${target.label} !`, 0.75, 1.22);
 
-  const iW = Math.round(Math.min(gw() * 0.28, 140));
+  const iW = Math.round(Math.min(gw() * 0.32, 162));
   const iH = Math.round(iW * 1.1);
-  const positions = trianglePositions(iW, iH);
+  const positions = challengeSpread(iW, iH);
   sample.forEach((animal, i) => {
     const wrap = buildAnimalCard(animal, true);
     wrap.classList.add('in-challenge');
@@ -4434,31 +4434,11 @@ function spreadPositions(n, itemW = 166, itemH = 256) {
   return out;
 }
 
-/* ─── TRIANGLE POSITIONS (défis 3 éléments) ─────────────── */
-/* Arrange 3 éléments en triangle : 1 en haut, 2 en bas.
-   Tailles réduites transmises pour garantir le fit sur petit écran. */
-function trianglePositions(iW, iH) {
-  const W   = gw(), H = gh();
-  const pad = 12;
-  const minY = 95;
-  const maxY = H - iH - 130;          // laisse place herbe + instruction
-  const midY = (minY + maxY) / 2;
-
-  // Ancres : haut-centre, bas-gauche, bas-droite — avec jitter léger
-  return [
-    {                                               // haut, légèrement centré
-      x: clamp(W/2 - iW/2 + rand(-W*0.1, W*0.1), pad, W - iW - pad),
-      y: clamp(minY + rand(0, (midY-minY)*0.4),   minY, midY - iH)
-    },
-    {                                               // bas gauche
-      x: clamp(pad + rand(0, W*0.12),              pad, W/2 - iW - 4),
-      y: clamp(midY + rand(-15, 20),               midY, maxY)
-    },
-    {                                               // bas droite
-      x: clamp(W - iW - pad + rand(-W*0.12, 0),   W/2 + 4, W - iW - pad),
-      y: clamp(midY + rand(-15, 20),               midY, maxY)
-    },
-  ];
+/* ─── SPREAD DÉFI — aléatoire garanti sur petit écran ───── */
+/* Utilise spreadPositions avec les vraies tailles réduites
+   calculées selon le viewport pour éviter tout débordement.  */
+function challengeSpread(iW, iH) {
+  return spreadPositions(3, iW, iH);
 }
 
 /* ─── VIEWPORT HELPERS ──────────────────────────────────── */
