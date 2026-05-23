@@ -5822,30 +5822,26 @@ function donCopy(type) {
 
 function donOpenWave() {
   const hint = document.getElementById('don-wave-hint');
-  // Tente d'ouvrir l'app Wave via son scheme (non documenté mais fonctionnel si installé)
-  const deepLink = `wave://send?phone=${encodeURIComponent(DON_PHONE)}&amount=${DON_AMOUNT}`;
-  const storeUrl = /iPhone|iPad|iPod/i.test(navigator.userAgent)
-    ? 'https://apps.apple.com/sn/app/wave-mobile-money/id1523884528'
-    : 'https://play.google.com/store/apps/details?id=com.wave.personal';
+  const phone = encodeURIComponent(DON_PHONE);
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  // Détection : si la page perd le focus → l'app s'est ouverte
-  let appOpened = false;
-  const onBlur = () => { appOpened = true; };
-  window.addEventListener('blur', onBlur, { once: true });
+  if (isIOS) {
+    // iOS : universal link Wave → ouvre l'app si installée, sinon App Store
+    window.location.href = `https://pay.wave.com/send/?phone=${phone}&amount=${DON_AMOUNT}`;
+    setTimeout(() => {
+      window.location.href = 'https://apps.apple.com/sn/app/wave-mobile-money/id1523884528';
+    }, 1800);
+  } else {
+    // Android : Intent URL → cible directement le package Wave
+    // S.browser_fallback_url = Play Store si l'app est absente
+    const fallback = encodeURIComponent('https://play.google.com/store/apps/details?id=com.wave.personal');
+    window.location.href =
+      `intent://send?phone=${phone}&amount=${DON_AMOUNT}` +
+      `#Intent;scheme=wave;package=com.wave.personal;` +
+      `S.browser_fallback_url=${fallback};end`;
+  }
 
-  window.location.href = deepLink;
-
-  setTimeout(() => {
-    window.removeEventListener('blur', onBlur);
-    if (!appOpened) {
-      // App non installée → rediriger vers le store + copier le numéro
-      if (hint) hint.textContent = '📲 Ouverture du store Wave…';
-      setTimeout(() => window.open(storeUrl, '_blank'), 200);
-      donCopyNum(hint);
-    } else {
-      if (hint) { hint.textContent = '✅ Wave ouvert !'; setTimeout(() => { hint.textContent = 'Toucher pour ouvrir Wave'; }, 2500); }
-    }
-  }, 1200);
+  if (hint) { hint.textContent = '✅ Ouverture Wave…'; setTimeout(() => { hint.textContent = 'Toucher pour ouvrir Wave'; }, 3000); }
 }
 
 function donOpenOrange() {
