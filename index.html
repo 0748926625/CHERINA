@@ -1801,6 +1801,233 @@ body.game-locked .tab-bar     { pointer-events: none !important; opacity: 0.6; }
   box-shadow: 0 0 12px #FF3B3088;
   animation: wrongShake .45s ease both;
 }
+
+/* ══════════════════════════════════════════════════════
+   ALBUM FAMILIAL
+══════════════════════════════════════════════════════ */
+#album-fab {
+  position: fixed; bottom: 28px; left: 20px; z-index: 400;
+  background: linear-gradient(135deg,#FF6B35,#E91E8C);
+  border: none; border-radius: 30px; color: #fff;
+  font-family: 'Nunito', cursive;
+  padding: 11px 16px; font-size: 14px; font-weight: 800;
+  cursor: pointer; display: flex; align-items: center; gap: 7px;
+  box-shadow: 0 4px 18px rgba(255,107,53,.5);
+  animation: albumFabPulse 2.2s ease-in-out infinite;
+  transition: transform .15s;
+}
+#album-fab:active { transform: scale(.92) rotate(2deg); }
+@keyframes albumFabPulse {
+  0%,100% { box-shadow: 0 4px 18px rgba(255,107,53,.5); }
+  50%      { box-shadow: 0 4px 28px rgba(255,107,53,.75), 0 0 0 9px rgba(255,107,53,.12); }
+}
+body.game-locked #album-fab { pointer-events: none; opacity: .5; }
+
+/* ── Overlay plein écran ── */
+#album-overlay {
+  display: none; position: fixed; inset: 0; z-index: 600;
+  overflow: hidden; font-family: system-ui,'Segoe UI',sans-serif;
+  background: #FFF8E7; touch-action: manipulation;
+}
+#album-overlay.open { display: block; animation: alFadeIn .25s ease; }
+@keyframes alFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── Bandeau kente ── */
+#album-overlay .al-kente { height:9px; background:repeating-linear-gradient(90deg,#FF6B35 0 20px,#FFC947 20px 40px,#4CAF50 40px 60px,#9B59B6 60px 80px); }
+
+/* ── Screens internes ── */
+#album-overlay .al-scr { display:none; min-height:100vh; flex-direction:column; }
+#album-overlay .al-scr.on { display:flex; animation:alFadeIn .25s ease; }
+
+/* ── Header ── */
+#album-overlay .al-hdr { padding:42px 14px 26px; display:flex; align-items:center; justify-content:space-between; position:relative; overflow:hidden; }
+#album-overlay .al-hdr::after { content:''; position:absolute; bottom:-16px; left:0; right:0; height:32px; background:#FFF8E7; border-radius:50% 50% 0 0/16px 16px 0 0; }
+#album-overlay .al-htitle { font-size:21px; font-weight:700; color:#fff; text-shadow:1px 2px 4px rgba(0,0,0,.22); }
+#album-overlay .al-hsub { font-size:12px; color:rgba(255,255,255,.83); margin-top:2px; }
+#album-overlay .al-ibtn { width:44px; height:44px; background:rgba(255,255,255,.24); border:none; border-radius:50%; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .2s; }
+#album-overlay .al-ibtn:active { background:rgba(255,255,255,.44); transform:scale(.9); }
+#album-overlay .al-bbtn { position:absolute; top:44px; left:12px; z-index:10; }
+#album-overlay .al-hbtns { display:flex; gap:8px; }
+
+/* ── Contenu ── */
+#album-overlay .al-cnt { flex:1; padding:22px 14px; overflow-y:auto; }
+
+/* ── Grille membres ── */
+#album-overlay .al-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:13px; padding-bottom:110px; }
+@media(min-width:380px){ #album-overlay .al-grid { grid-template-columns:repeat(3,1fr); } }
+#album-overlay .al-card { background:#fff; border-radius:22px; padding:18px 9px 13px; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,.13); cursor:pointer; position:relative; overflow:hidden; animation:alCardIn .38s ease backwards; }
+#album-overlay .al-card:active { transform:scale(.92); }
+@keyframes alCardIn { from{opacity:0;transform:scale(.6) rotate(-7deg)} to{opacity:1;transform:scale(1)} }
+#album-overlay .al-cst { position:absolute; top:0; left:0; right:0; height:7px; border-radius:22px 22px 0 0; }
+#album-overlay .al-cav { width:72px; height:72px; border-radius:50%; margin:0 auto 9px; display:flex; align-items:center; justify-content:center; font-size:34px; border:4px solid #fff; box-shadow:0 3px 10px rgba(0,0,0,.14); overflow:hidden; background:#f0f0f0; transition:transform .2s; }
+#album-overlay .al-card:active .al-cav { transform:scale(1.1) rotate(10deg); }
+#album-overlay .al-cav img { width:100%; height:100%; object-fit:cover; }
+#album-overlay .al-crole { font-size:11px; color:#bbb; text-transform:uppercase; letter-spacing:.7px; margin-bottom:2px; }
+#album-overlay .al-cname { font-size:16px; font-weight:700; color:#2C1810; }
+#album-overlay .al-cmic { position:absolute; bottom:7px; right:9px; font-size:13px; opacity:.5; }
+
+/* ── FAB ── */
+#album-overlay .al-fab { position:fixed; bottom:26px; right:20px; width:66px; height:66px; background:linear-gradient(135deg,#FF6B35,#E91E8C); border:none; border-radius:50%; font-size:30px; color:#fff; cursor:pointer; box-shadow:0 5px 20px rgba(255,107,53,.52); display:flex; align-items:center; justify-content:center; z-index:100; animation:albumFabPulse 2s ease-in-out infinite; }
+#album-overlay .al-fab:active { transform:scale(.87) rotate(45deg); }
+
+/* ── Vide ── */
+#album-overlay .al-empty { text-align:center; padding:28px 14px; }
+#album-overlay .al-eico { font-size:58px; display:block; margin-bottom:10px; animation:alCardIn .5s ease; }
+#album-overlay .al-etxt { font-size:16px; color:#aaa; line-height:1.7; }
+
+/* ── Modal membre ── */
+#album-overlay .al-ov { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:700; align-items:center; justify-content:center; padding:18px; }
+#album-overlay .al-ov.on { display:flex; animation:alFadeIn .2s ease; }
+#album-overlay .al-mo { background:#fff; border-radius:30px; padding:36px 26px 26px; text-align:center; max-width:330px; width:100%; position:relative; animation:alMoIn .32s cubic-bezier(.175,.885,.32,1.275); }
+@keyframes alMoIn { from{transform:scale(.35) rotate(-14deg);opacity:0} to{transform:scale(1);opacity:1} }
+#album-overlay .al-mclose { position:absolute; top:11px; right:11px; width:34px; height:34px; border:none; border-radius:50%; background:#f0f0f0; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+#album-overlay .al-mav { width:106px; height:106px; border-radius:50%; margin:0 auto 13px; display:flex; align-items:center; justify-content:center; font-size:56px; border:5px solid; box-shadow:0 7px 22px rgba(0,0,0,.14); overflow:hidden; background:#f5f5f5; }
+#album-overlay .al-mav img { width:100%; height:100%; object-fit:cover; }
+#album-overlay .al-mrole { font-size:13px; color:#bbb; margin-bottom:3px; }
+#album-overlay .al-mname { font-size:27px; font-weight:700; color:#2C1810; margin-bottom:16px; }
+#album-overlay .al-wav { display:flex; justify-content:center; align-items:flex-end; gap:5px; height:36px; margin:10px 0; }
+#album-overlay .al-bar { width:6px; border-radius:3px; background:#FF6B35; animation:alWa .8s ease-in-out infinite; }
+#album-overlay .al-bar:nth-child(1){height:13px;animation-delay:0s} #album-overlay .al-bar:nth-child(2){height:23px;animation-delay:.12s}
+#album-overlay .al-bar:nth-child(3){height:33px;animation-delay:.22s} #album-overlay .al-bar:nth-child(4){height:19px;animation-delay:.32s}
+#album-overlay .al-bar:nth-child(5){height:27px;animation-delay:.16s} #album-overlay .al-bar:nth-child(6){height:13px;animation-delay:.06s}
+@keyframes alWa { 0%,100%{transform:scaleY(.44);opacity:.62} 50%{transform:scaleY(1.2);opacity:1} }
+#album-overlay .al-wav.off .al-bar { animation-play-state:paused; }
+#album-overlay .al-lovebtn { background:linear-gradient(135deg,#E91E8C,#FF6B35); border:none; border-radius:50px; color:#fff; font-size:18px; padding:13px 32px; cursor:pointer; margin-top:7px; box-shadow:0 4px 14px rgba(233,30,140,.38); transition:transform .2s; font-family:inherit; }
+#album-overlay .al-lovebtn:active { transform:scale(.92); }
+#album-overlay .al-arow { margin-top:13px; display:flex; gap:9px; justify-content:center; }
+#album-overlay .al-mbtn { background:#f4f4f4; border:none; border-radius:50px; padding:9px 16px; font-size:13px; cursor:pointer; font-family:inherit; }
+#album-overlay .al-mbtn:active { background:#eaeaea; }
+#album-overlay .al-mbtn.red { background:#fff0f0; color:#e53935; }
+
+/* ── Crop modal ── */
+#album-overlay .al-crop-ov { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:800; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
+#album-overlay .al-crop-ov.on { display:flex; }
+#album-overlay .al-crop-title { color:#fff; font-size:18px; font-weight:700; margin-bottom:8px; }
+#album-overlay .al-crop-sub { color:rgba(255,255,255,.65); font-size:13px; margin-bottom:18px; }
+#album-overlay .al-crop-ring { width:280px; height:280px; border-radius:28px; overflow:hidden; position:relative; border:4px solid #FF6B35; background:#222; flex-shrink:0; touch-action:none; }
+#album-overlay .al-crop-ring img { position:absolute; max-width:none; transform-origin:center center; }
+#album-overlay .al-crop-controls { width:100%; max-width:300px; margin-top:20px; }
+#album-overlay .al-crop-zoom-row { display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+#album-overlay .al-crop-zoom-row label { color:#fff; font-size:18px; }
+#album-overlay .al-crop-zoom-row input[type=range] { flex:1; height:6px; accent-color:#FF6B35; }
+#album-overlay .al-crop-btns { display:flex; gap:12px; }
+#album-overlay .al-crop-btn { flex:1; border:none; border-radius:50px; padding:15px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit; }
+#album-overlay .al-crop-btn.ok { background:linear-gradient(135deg,#FF6B35,#FFC947); color:#fff; }
+#album-overlay .al-crop-btn.cancel { background:rgba(255,255,255,.15); color:#fff; }
+
+/* ── Formulaire ── */
+#album-overlay .al-fhdr { padding:48px 14px 28px; text-align:center; position:relative; overflow:hidden; }
+#album-overlay .al-fhdr::after { content:''; position:absolute; bottom:-16px; left:0; right:0; height:32px; background:#FFF8E7; border-radius:50% 50% 0 0/16px 16px 0 0; }
+#album-overlay .al-ftitle { font-size:20px; color:#fff; font-weight:700; }
+#album-overlay .al-fsub { font-size:13px; color:rgba(255,255,255,.78); margin-top:3px; }
+#album-overlay .al-dots { display:flex; justify-content:center; gap:7px; padding:14px 0 3px; }
+#album-overlay .al-dot { width:10px; height:10px; border-radius:50%; background:#ddd; transition:all .3s; }
+#album-overlay .al-dot.on { background:#FF6B35; transform:scale(1.3); }
+#album-overlay .al-dot.dn { background:#4CAF50; }
+#album-overlay .al-slbl { font-size:15px; font-weight:700; color:#2C1810; margin-bottom:13px; text-align:center; }
+#album-overlay .al-inp { width:100%; border:3px solid #eee; border-radius:14px; padding:14px 16px; font-size:16px; background:#fff; color:#2C1810; outline:none; transition:border-color .2s; margin-bottom:12px; font-family:inherit; }
+#album-overlay .al-inp:focus { border-color:#FF6B35; }
+
+/* ── Photo picker ── */
+#album-overlay .al-photo-prev { width:100px; height:100px; border-radius:18px; margin:0 auto 14px; display:flex; align-items:center; justify-content:center; background:#f0f0f0; border:4px dashed #ddd; overflow:hidden; position:relative; transition:all .2s; }
+#album-overlay .al-photo-prev.has { border:4px solid #FF6B35; }
+#album-overlay .al-photo-prev img { width:100%; height:100%; object-fit:cover; }
+#album-overlay .al-ph-ico { font-size:36px; color:#ccc; }
+#album-overlay .al-photo-btns { display:flex; gap:9px; justify-content:center; margin-bottom:14px; flex-wrap:wrap; }
+#album-overlay .al-pbtn { flex:1; min-width:70px; max-width:110px; background:#fff; border:2.5px solid #eee; border-radius:14px; padding:11px 6px; text-align:center; font-size:12px; cursor:pointer; color:#2C1810; transition:all .2s; display:flex; flex-direction:column; align-items:center; gap:4px; font-family:inherit; }
+#album-overlay .al-pbtn:active { background:#f5f5f5; transform:scale(.95); }
+#album-overlay .al-pbtn .al-pico { font-size:24px; }
+#album-overlay .al-orline { display:flex; align-items:center; gap:10px; margin:14px 0; color:#ccc; font-size:13px; }
+#album-overlay .al-orline::before, #album-overlay .al-orline::after { content:''; flex:1; height:1px; background:#eee; }
+
+/* ── Avatar grid ── */
+#album-overlay .al-avgrid { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; margin-bottom:20px; }
+#album-overlay .al-avopt { aspect-ratio:1; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; cursor:pointer; border:4px solid transparent; transition:all .2s; box-shadow:0 3px 9px rgba(0,0,0,.1); }
+#album-overlay .al-avopt.sel { border-color:#FF6B35; transform:scale(1.14); }
+#album-overlay .al-avopt:active { transform:scale(.87); }
+
+/* ── Rôles ── */
+#album-overlay .al-rgrid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:16px; }
+#album-overlay .al-rchip { background:#fff; border:3px solid #eee; border-radius:50px; padding:10px 5px; text-align:center; font-size:13px; cursor:pointer; transition:all .2s; color:#2C1810; font-family:inherit; }
+#album-overlay .al-rchip.sel { border-color:#FF6B35; background:#FFF3EE; color:#FF6B35; font-weight:700; }
+
+/* ── Boutons ── */
+#album-overlay .al-btn1 { width:100%; background:linear-gradient(135deg,#FF6B35,#FFC947); border:none; border-radius:50px; color:#fff; font-size:18px; padding:16px; cursor:pointer; box-shadow:0 4px 14px rgba(255,107,53,.38); font-weight:700; transition:transform .2s; font-family:inherit; }
+#album-overlay .al-btn1:active { transform:scale(.97); }
+#album-overlay .al-btn2 { width:100%; background:#fff; border:3px solid #eee; border-radius:50px; color:#888; font-size:16px; padding:14px; cursor:pointer; margin-top:9px; transition:background .2s; font-family:inherit; }
+#album-overlay .al-btn2:active { background:#f4f4f4; }
+
+/* ── Enregistreur ── */
+#album-overlay .al-recwrap { text-align:center; padding:24px 12px; }
+#album-overlay .al-micbtn { width:112px; height:112px; border-radius:50%; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:48px; margin:20px auto; transition:all .2s; box-shadow:0 5px 22px rgba(0,0,0,.2); }
+#album-overlay .al-micbtn.idle { background:linear-gradient(135deg,#FF6B35,#E91E8C); }
+#album-overlay .al-micbtn.rec { background:linear-gradient(135deg,#E53935,#B71C1C); animation:alMicPulse .74s ease-in-out infinite; }
+#album-overlay .al-micbtn.done { background:linear-gradient(135deg,#4CAF50,#2E7D32); }
+@keyframes alMicPulse { 0%,100%{transform:scale(1);box-shadow:0 5px 22px rgba(229,57,53,.4)} 50%{transform:scale(1.1);box-shadow:0 5px 38px rgba(229,57,53,.68),0 0 0 17px rgba(229,57,53,.1)} }
+#album-overlay .al-tmr { font-size:32px; color:#2C1810; font-weight:700; margin:5px 0; }
+#album-overlay .al-rhint { font-size:13px; color:#aaa; line-height:1.6; margin-bottom:14px; }
+#album-overlay .al-ttssep { border-top:2px dashed #eee; padding-top:18px; margin-top:18px; }
+#album-overlay .al-ttslbl { font-size:13px; color:#bbb; margin-bottom:9px; text-align:center; }
+
+/* ── Paramètres ── */
+#album-overlay .al-sitem { background:#fff; border-radius:14px; padding:16px 17px; margin-bottom:10px; display:flex; align-items:center; gap:13px; box-shadow:0 2px 7px rgba(0,0,0,.07); cursor:pointer; transition:transform .15s; }
+#album-overlay .al-sitem:active { transform:scale(.98); }
+#album-overlay .al-sico { font-size:24px; }
+#album-overlay .al-stxt strong { display:block; font-size:15px; color:#2C1810; }
+#album-overlay .al-stxt small { font-size:12px; color:#bbb; }
+#album-overlay .al-pbox { background:#fff; border-radius:14px; padding:17px; box-shadow:0 4px 16px rgba(0,0,0,.13); font-size:13px; color:#777; line-height:1.9; }
+#album-overlay .al-pbox strong { color:#2C1810; }
+
+/* ── Decoys ── */
+#album-overlay .al-decoy-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; padding-bottom:100px; }
+#album-overlay .al-dcard { background:#fff; border-radius:18px; padding:16px 8px 12px; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,.13); cursor:pointer; position:relative; animation:alCardIn .3s ease backwards; }
+#album-overlay .al-dcard:active { transform:scale(.92); }
+#album-overlay .al-dcard-face { width:64px; height:64px; border-radius:50%; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:30px; overflow:hidden; background:#f5f5f5; border:3px solid #eee; }
+#album-overlay .al-dcard-face img { width:100%; height:100%; object-fit:cover; }
+#album-overlay .al-dcard-lbl { font-size:12px; color:#aaa; }
+#album-overlay .al-dcard-del { position:absolute; top:6px; right:6px; width:22px; height:22px; background:#fee; border:none; border-radius:50%; font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#e53935; }
+#album-overlay .al-dcard-add { border:3px dashed #ddd; background:#fafafa; }
+#album-overlay .al-need-box { background:#FFF3EE; border:2px solid #FFD0BC; border-radius:14px; padding:16px; margin-bottom:18px; font-size:14px; color:#FF6B35; line-height:1.7; text-align:center; }
+
+/* ── Jeu famille ── */
+#album-overlay .al-game-hdr { padding:28px 12px 10px; display:flex; align-items:center; justify-content:space-between; position:relative; overflow:hidden; }
+#album-overlay .al-game-hdr::after { content:''; position:absolute; bottom:-12px; left:0; right:0; height:24px; background:#FFF8E7; border-radius:50% 50% 0 0/12px 12px 0 0; }
+#album-overlay .al-score-pill { background:rgba(255,255,255,.28); border-radius:50px; padding:5px 12px; color:#fff; font-size:14px; font-weight:700; }
+#album-overlay .al-game-instr { background:#fff; border-radius:16px; padding:10px 12px; margin:10px 10px 6px; box-shadow:0 4px 16px rgba(0,0,0,.13); display:flex; align-items:center; gap:10px; transition:background .3s; }
+#album-overlay .al-game-instr.wrong-flash { background:#FFF0F0; animation:wrongShake .4s ease; }
+#album-overlay .al-gi-text { flex:1; font-size:17px; font-weight:700; color:#2C1810; }
+#album-overlay .al-gi-replay { width:40px; height:40px; border-radius:50%; border:none; background:linear-gradient(135deg,#FF6B35,#FFC947); font-size:20px; cursor:pointer; flex-shrink:0; box-shadow:0 3px 10px rgba(255,107,53,.35); }
+#album-overlay .al-game-cards { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; padding:6px 10px 0; }
+#album-overlay .al-gcrd { width:calc(50% - 10px); background:#fff; border-radius:22px; display:flex; flex-direction:column; align-items:center; box-shadow:0 4px 16px rgba(0,0,0,.13); cursor:pointer; border:4px solid transparent; transition:all .18s; overflow:hidden; }
+#album-overlay .al-gcrd:active { transform:scale(.96); }
+#album-overlay .al-gcrd-face { width:100%; aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:64px; overflow:hidden; background:#f5f5f5; }
+#album-overlay .al-gcrd-face img { width:100%; height:100%; object-fit:cover; }
+#album-overlay .al-gcrd-tap { font-size:12px; color:#aaa; font-style:italic; text-align:center; padding:6px 0 8px; width:100%; }
+#album-overlay .al-gcrd.correct { border-color:#4CAF50; animation:alCorrect .5s ease; }
+#album-overlay .al-gcrd.wrong { animation:alWrongShake .42s ease; }
+@keyframes alCorrect { 0%{transform:scale(1)} 50%{transform:scale(1.12)} 100%{transform:scale(1)} }
+@keyframes alWrongShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-9px)} 40%{transform:translateX(9px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)} }
+#album-overlay .al-game-footer { padding:10px 14px 90px; display:flex; gap:10px; justify-content:center; }
+#album-overlay .al-gfbtn { flex:1; max-width:140px; border:none; border-radius:50px; padding:10px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+#album-overlay .al-gfbtn.primary { background:linear-gradient(135deg,#FF6B35,#FFC947); color:#fff; box-shadow:0 4px 14px rgba(255,107,53,.38); }
+#album-overlay .al-gfbtn.ghost { background:#fff; color:#888; border:2.5px solid #eee; }
+
+/* ── Win zoom ── */
+#album-overlay .al-win-zoom-ov { display:none; position:fixed; inset:0; z-index:900; background:rgba(0,0,0,.55); align-items:center; justify-content:center; flex-direction:column; gap:16px; }
+#album-overlay .al-win-zoom-ov.on { display:flex; animation:alFadeIn .2s ease; }
+#album-overlay .al-win-zoom-face { width:min(80vw,320px); height:min(80vw,320px); border-radius:24px; overflow:hidden; background:#f5f5f5; display:flex; align-items:center; justify-content:center; font-size:120px; border:6px solid #fff; box-shadow:0 12px 50px rgba(0,0,0,.4); animation:alMoIn .35s cubic-bezier(.175,.885,.32,1.275); }
+#album-overlay .al-win-zoom-face img { width:100%; height:100%; object-fit:cover; }
+#album-overlay .al-win-zoom-name { color:#fff; font-size:clamp(22px,6vw,32px); font-weight:900; text-shadow:0 2px 12px rgba(0,0,0,.5); text-align:center; }
+
+/* ── Confetti ── */
+#album-overlay .al-cfw { position:fixed; inset:0; pointer-events:none; z-index:950; }
+#album-overlay .al-piece { position:absolute; animation:fl linear forwards; }
+
+/* ── Toast ── */
+.al-toast { position:fixed; bottom:104px; left:50%; transform:translateX(-50%); background:rgba(44,24,16,.9); color:#fff; padding:12px 20px; border-radius:50px; font-family:system-ui,sans-serif; font-size:15px; z-index:1000; animation:alFadeIn .2s ease; box-shadow:0 4px 14px rgba(0,0,0,.28); white-space:nowrap; }
+
+/* ── Ajouter visage modal ── */
+#album-overlay .al-decoy-add-mo { background:#fff; border-radius:30px; padding:28px 22px 22px; max-width:330px; width:100%; position:relative; animation:alMoIn .3s ease; }
 </style>
 </head>
 <body>
@@ -4850,6 +5077,603 @@ function onMatchTap(idx) {
   }
 }
 
+/* ══════════════════════════════════════════════════════════
+   ALBUM FAMILIAL — logique complète
+   Stockage : localStorage  |  Photos : <input file>  |
+   Audio : MediaRecorder + HTML5 Audio  |  TTS : Web Speech
+══════════════════════════════════════════════════════════ */
+(function(){
+'use strict';
+
+// ── Constantes ──────────────────────────────────────────
+const AL_KEY      = 'cherina_family_v1';
+const AL_CROP_SZ  = 280;
+const AL_OUT_SZ   = 240;
+
+const AL_AVATARS = [
+  {e:'👶🏿',bg:'#D4956A'},{e:'👶🏾',bg:'#E8A87C'},{e:'🧒🏿',bg:'#C47C2E'},{e:'🧒🏾',bg:'#E8A050'},
+  {e:'👧🏿',bg:'#FF6B35'},{e:'👧🏾',bg:'#E91E8C'},{e:'👦🏿',bg:'#9B59B6'},{e:'👦🏾',bg:'#3498DB'},
+  {e:'👩🏿',bg:'#C0392B'},{e:'👩🏾',bg:'#E74C3C'},{e:'👨🏿',bg:'#2C3E50'},{e:'👨🏾',bg:'#5D6D7E'},
+  {e:'👵🏿',bg:'#4CAF50'},{e:'👵🏾',bg:'#8BC34A'},{e:'👴🏿',bg:'#795548'},{e:'👴🏾',bg:'#A1887F'},
+];
+const AL_ROLES = [
+  'Maman','Papa','Grande Sœur','Grand Frère','Mamie','Papi',
+  'Tantie','Tonton','Tuteur','Tutrice','Marraine','Parrain',
+  'Nourrice','Nounou','Cousine','Cousin',
+];
+const AL_COLS = ['#FF6B35','#E91E8C','#9B59B6','#3498DB','#4CAF50','#FFC947','#FF5722','#00BCD4'];
+
+// ── State ────────────────────────────────────────────────
+let alDb        = { members:[], decoys:[], title:'Mon Album' };
+let alActiveId  = null;
+let alSelAv     = 0;
+let alSelRole   = '';
+let alEditId    = null;
+let alPhotoB64  = null;
+let alAudioB64  = null;
+let alRecActive = false;
+let alCurAudio  = null;
+let alMediaRec  = null;
+let alRecTimer  = null;
+let alRecSecs   = 0;
+let alRecChunks = [];
+let alCrop      = { img:null, x:0, y:0, scale:1.0, target:'member' };
+let alGame      = { targetId:null, choices:[], score:0, locked:false };
+
+// ── Expose quelques fonctions globalement ────────────────
+window.alOpen           = alOpen;
+window.alClose          = alClose;
+window.alGoTo           = alGoTo;
+window.alStartAdd       = alStartAdd;
+window.alGoStep         = alGoStep;
+window.alOpenCam        = alOpenCam;
+window.alChooseGallery  = alChooseGallery;
+window.alDeletePhoto    = alDeletePhoto;
+window.alToggleRec      = alToggleRec;
+window.alSaveMember     = alSaveMember;
+window.alEditMember     = alEditMember;
+window.alDelMember      = alDelMember;
+window.alCloseModal     = alCloseModal;
+window.alSendLove       = alSendLove;
+window.alOnZoomChange   = alOnZoomChange;
+window.alCancelCrop     = alCancelCrop;
+window.alConfirmCrop    = alConfirmCrop;
+window.alSaveTitle      = alSaveTitle;
+window.alExportAlbum    = alExportAlbum;
+window.alImportAlbum    = alImportAlbum;
+window.alDoReset        = alDoReset;
+window.alTryStartGame   = alTryStartGame;
+window.alNewRound       = alNewRound;
+window.alReplayInstr    = alReplayInstr;
+window.alPickAv         = alPickAv;
+window.alPickRole       = alPickRole;
+window.alDelDecoy       = alDelDecoy;
+window.alActiveId       = null; // réexposé via getter
+
+// ── Overlay open/close ───────────────────────────────────
+function alOpen(){
+  document.getElementById('album-overlay').classList.add('open');
+  alLoad(); alRenderGrid();
+}
+function alClose(){
+  alStopAudio();
+  document.getElementById('album-overlay').classList.remove('open');
+}
+
+// ── Stockage ─────────────────────────────────────────────
+function alLoad(){
+  try{
+    const r=localStorage.getItem(AL_KEY);
+    if(r){ const p=JSON.parse(r); alDb.members=p.members||[]; alDb.decoys=p.decoys||[]; alDb.title=p.title||'Mon Album'; }
+  }catch(e){}
+}
+function alSave(){
+  try{ localStorage.setItem(AL_KEY,JSON.stringify({v:'1',updated:new Date().toISOString(),title:alDb.title,members:alDb.members,decoys:alDb.decoys})); }
+  catch(e){ alToast('Erreur de sauvegarde ⚠️'); }
+}
+function alUid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2); }
+
+// ── Navigation interne ───────────────────────────────────
+function alGoTo(id){
+  document.querySelectorAll('#album-overlay .al-scr').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  if(id==='al-s-home')     alRenderGrid();
+  if(id==='al-s-settings') document.getElementById('al-title-inp').value=alDb.title;
+  if(id==='al-s-decoys')   alRenderDecoys();
+}
+
+// ── Grille membres ───────────────────────────────────────
+function alRenderGrid(){
+  document.getElementById('al-album-title').textContent=alDb.title;
+  const grid=document.getElementById('al-mgrid'), empty=document.getElementById('al-empty');
+  if(!alDb.members.length){ empty.style.display='block'; grid.style.display='none'; return; }
+  empty.style.display='none'; grid.style.display='grid';
+  grid.innerHTML=alDb.members.map((m,i)=>{
+    const av=AL_AVATARS[m.av]||AL_AVATARS[0], c=AL_COLS[i%AL_COLS.length];
+    return `<div class="al-card" onclick="alOpenMember('${m.id}')" style="animation-delay:${i*.07}s">
+      <div class="al-cst" style="background:${c}"></div>
+      <div class="al-cav" style="background:${m.photo?'#f0f0f0':av.bg};border-color:${c}40">
+        ${m.photo?`<img src="${m.photo}" alt="${m.name}">`:`${av.e}`}
+      </div>
+      <div class="al-crole">${m.role}</div>
+      <div class="al-cname">${m.name}</div>
+      ${(m.voice||m.tts)?'<div class="al-cmic">🔊</div>':''}
+    </div>`;
+  }).join('');
+}
+
+// ── Modal membre ─────────────────────────────────────────
+function alOpenMember(id){
+  const m=alDb.members.find(x=>x.id===id); if(!m) return;
+  alActiveId=id; window.alActiveId=id;
+  const av=AL_AVATARS[m.av]||AL_AVATARS[0], c=AL_COLS[alDb.members.indexOf(m)%AL_COLS.length];
+  const ma=document.getElementById('al-mav');
+  ma.style.background=m.photo?'#f0f0f0':av.bg; ma.style.borderColor=c;
+  ma.innerHTML=m.photo?`<img src="${m.photo}" alt="${m.name}">`:`${av.e}`;
+  document.getElementById('al-mrole').textContent=m.role;
+  document.getElementById('al-mname').textContent=m.name;
+  document.getElementById('al-modal').classList.add('on');
+  setTimeout(()=>alPlayVoice(m),380);
+}
+function alCloseModal(){ document.getElementById('al-modal').classList.remove('on'); alStopAudio(); alWavOff(); }
+
+// ── Audio / TTS ──────────────────────────────────────────
+function alPlayVoice(m){
+  alStopAudio(); alWavOn();
+  if(m.voice){
+    alCurAudio=new Audio(m.voice);
+    alCurAudio.onended=()=>alWavOff();
+    alCurAudio.play().catch(()=>alWavOff());
+  } else if(m.tts){ alTts(m.tts,()=>alWavOff()); }
+  else { alTts(m.name,()=>alWavOff()); }
+}
+function alStopAudio(){
+  if(alCurAudio){ alCurAudio.pause(); alCurAudio.src=''; alCurAudio=null; }
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+}
+function alTts(text,cb){
+  if(!('speechSynthesis' in window)){ if(cb) setTimeout(cb,1000); return; }
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text); u.lang='fr-FR'; u.rate=.85; u.pitch=1.15;
+  if(cb) u.onend=cb;
+  speechSynthesis.speak(u);
+}
+function alWavOn(){ document.getElementById('al-wav').classList.remove('off'); }
+function alWavOff(){ document.getElementById('al-wav').classList.add('off'); }
+function alSendLove(){
+  alConfetti(); alStars();
+  const m=alDb.members.find(x=>x.id===alActiveId);
+  if(m) alTts(`Bisous ${m.name} ! Je t'aime !`);
+}
+
+// ── Photo via <input file> ───────────────────────────────
+function alOpenCam(target){
+  alCrop.target=target;
+  const inp=document.getElementById('al-file-cam');
+  inp.onchange=e=>{ const f=e.target.files[0]; if(f) alReadFile(f); inp.value=''; };
+  inp.click();
+}
+function alChooseGallery(target){
+  alCrop.target=target;
+  const inp=document.getElementById('al-file-gallery');
+  inp.onchange=e=>{ const f=e.target.files[0]; if(f) alReadFile(f); inp.value=''; };
+  inp.click();
+}
+function alReadFile(file){
+  const reader=new FileReader();
+  reader.onload=ev=>alOpenCropModal(ev.target.result);
+  reader.readAsDataURL(file);
+}
+
+// ── Crop ─────────────────────────────────────────────────
+function alOpenCropModal(src){
+  alCrop.x=0; alCrop.y=0; alCrop.scale=1.0;
+  document.getElementById('al-crop-zoom').value=100;
+  alCrop.img=new Image();
+  alCrop.img.onload=()=>{
+    document.getElementById('al-crop-img-el').src=src;
+    alPositionCropImage();
+    document.getElementById('al-crop-ov').classList.add('on');
+  };
+  alCrop.img.src=src;
+}
+function alPositionCropImage(){
+  const img=document.getElementById('al-crop-img-el');
+  const C=AL_CROP_SZ, nw=alCrop.img.naturalWidth, nh=alCrop.img.naturalHeight;
+  const base=Math.max(C/nw,C/nh)*alCrop.scale;
+  const dw=nw*base, dh=nh*base;
+  img.style.width=dw+'px'; img.style.height=dh+'px';
+  img.style.left=((C-dw)/2+alCrop.x)+'px'; img.style.top=((C-dh)/2+alCrop.y)+'px';
+}
+function alClampCrop(){
+  if(!alCrop.img) return;
+  const C=AL_CROP_SZ, nw=alCrop.img.naturalWidth, nh=alCrop.img.naturalHeight;
+  const base=Math.max(C/nw,C/nh)*alCrop.scale;
+  const dw=nw*base, dh=nh*base;
+  const maxX=(dw-C)/2, maxY=(dh-C)/2;
+  alCrop.x=Math.max(-maxX,Math.min(maxX,alCrop.x));
+  alCrop.y=Math.max(-maxY,Math.min(maxY,alCrop.y));
+}
+function alOnZoomChange(v){ alCrop.scale=parseFloat(v)/100; alClampCrop(); alPositionCropImage(); }
+function alCancelCrop(){ document.getElementById('al-crop-ov').classList.remove('on'); }
+function alConfirmCrop(){
+  const canvas=document.createElement('canvas'); canvas.width=AL_OUT_SZ; canvas.height=AL_OUT_SZ;
+  const ctx=canvas.getContext('2d');
+  const r=AL_OUT_SZ/6;
+  ctx.beginPath();
+  ctx.moveTo(r,0); ctx.lineTo(AL_OUT_SZ-r,0); ctx.quadraticCurveTo(AL_OUT_SZ,0,AL_OUT_SZ,r);
+  ctx.lineTo(AL_OUT_SZ,AL_OUT_SZ-r); ctx.quadraticCurveTo(AL_OUT_SZ,AL_OUT_SZ,AL_OUT_SZ-r,AL_OUT_SZ);
+  ctx.lineTo(r,AL_OUT_SZ); ctx.quadraticCurveTo(0,AL_OUT_SZ,0,AL_OUT_SZ-r);
+  ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0); ctx.closePath(); ctx.clip();
+  const C=AL_CROP_SZ, nw=alCrop.img.naturalWidth, nh=alCrop.img.naturalHeight;
+  const base=Math.max(C/nw,C/nh)*alCrop.scale;
+  const dw=nw*base, dh=nh*base;
+  const f=AL_OUT_SZ/C;
+  ctx.drawImage(alCrop.img,(C-dw)/2*f+alCrop.x*f,(C-dh)/2*f+alCrop.y*f,dw*f,dh*f);
+  const b64=canvas.toDataURL('image/jpeg',.88);
+  document.getElementById('al-crop-ov').classList.remove('on');
+  if(alCrop.target==='member'){ alPhotoB64=b64; alShowPhotoPreview(b64); alSelAv=-1; alRenderAvGrid(); }
+  else alSaveDecoy(b64,null);
+}
+
+// Touch drag sur crop ring
+(function initAlCropDrag(){
+  document.addEventListener('DOMContentLoaded',()=>{
+    const ring=document.getElementById('al-crop-ring');
+    let sx=0,sy=0;
+    ring.addEventListener('touchstart',e=>{ e.preventDefault(); const t=e.touches[0]; sx=t.clientX-alCrop.x; sy=t.clientY-alCrop.y; },{passive:false});
+    ring.addEventListener('touchmove',e=>{ e.preventDefault(); const t=e.touches[0]; alCrop.x=t.clientX-sx; alCrop.y=t.clientY-sy; alClampCrop(); alPositionCropImage(); },{passive:false});
+    ring.addEventListener('mousedown',e=>{ sx=e.clientX-alCrop.x; sy=e.clientY-alCrop.y;
+      const mm=ev=>{ alCrop.x=ev.clientX-sx; alCrop.y=ev.clientY-sy; alClampCrop(); alPositionCropImage(); };
+      const mu=()=>document.removeEventListener('mousemove',mm);
+      document.addEventListener('mousemove',mm); document.addEventListener('mouseup',mu,{once:true});
+    });
+  });
+})();
+
+// ── Photo preview ─────────────────────────────────────────
+function alShowPhotoPreview(src){
+  const prev=document.getElementById('al-photo-prev');
+  const ico=document.getElementById('al-ph-ico'), img=document.getElementById('al-ph-img');
+  img.src=src; img.style.display='block'; ico.style.display='none';
+  prev.classList.add('has'); document.getElementById('al-del-ph').style.display='flex';
+}
+function alClearPhotoPreview(){
+  const prev=document.getElementById('al-photo-prev');
+  const ico=document.getElementById('al-ph-ico'), img=document.getElementById('al-ph-img');
+  img.src=''; img.style.display='none'; ico.style.display='block';
+  prev.classList.remove('has'); document.getElementById('al-del-ph').style.display='none';
+}
+function alDeletePhoto(){ alPhotoB64=null; alClearPhotoPreview(); alSelAv=0; alRenderAvGrid(); }
+
+// ── Ajout membre (flow 3 étapes) ─────────────────────────
+function alStartAdd(){
+  alEditId=null; alSelAv=0; alSelRole=''; alPhotoB64=null; alAudioB64=null;
+  ['al-crole','al-ninp','al-ttsinp'].forEach(id=>document.getElementById(id).value='');
+  alClearPhotoPreview(); alResetMic(); alRenderAvGrid(); alRenderRoles();
+  alGoTo('al-s-add'); alGoStep(1);
+  document.getElementById('al-add-back').onclick=()=>alGoTo('al-s-home');
+}
+function alEditMember(id){
+  alCloseModal();
+  const m=alDb.members.find(x=>x.id===id); if(!m) return;
+  alEditId=id; alSelAv=m.av; alSelRole=m.role; alPhotoB64=m.photo||null; alAudioB64=m.voice||null;
+  alRenderAvGrid(); alRenderRoles();
+  document.getElementById('al-ninp').value=m.name;
+  document.getElementById('al-ttsinp').value=m.tts||'';
+  document.getElementById('al-crole').value=AL_ROLES.includes(m.role)?'':m.role;
+  if(alPhotoB64) alShowPhotoPreview(alPhotoB64); else alClearPhotoPreview();
+  if(alAudioB64){ const b=document.getElementById('al-micbtn'); b.className='al-micbtn done'; b.textContent='✅'; document.getElementById('al-rstatus').textContent='Enregistré ! Appuie pour ré-enregistrer.'; }
+  else alResetMic();
+  alGoTo('al-s-add'); alGoStep(1);
+  document.getElementById('al-add-back').onclick=()=>alGoTo('al-s-home');
+}
+function alRenderAvGrid(){
+  document.getElementById('al-avgrid').innerHTML=AL_AVATARS.map((a,i)=>`
+    <div class="al-avopt ${i===alSelAv?'sel':''}" style="background:${a.bg}" onclick="alPickAv(${i})">${a.e}</div>`).join('');
+}
+function alRenderRoles(){
+  document.getElementById('al-rgrid').innerHTML=AL_ROLES.map(r=>`
+    <div class="al-rchip ${alSelRole===r?'sel':''}" onclick="alPickRole('${r.replace(/'/g,"&#39;")}')">${r}</div>`).join('');
+}
+function alPickAv(i){ alSelAv=i; alRenderAvGrid(); }
+function alPickRole(r){ alSelRole=r; document.getElementById('al-crole').value=''; alRenderRoles(); }
+
+function alGoStep(n){
+  if(n===3){
+    const cr=document.getElementById('al-crole').value.trim(); if(cr) alSelRole=cr;
+    if(!alSelRole){ alToast('Choisis un rôle 😊'); return; }
+    if(!document.getElementById('al-ninp').value.trim()){ alToast('Entre un prénom 📝'); return; }
+    document.getElementById('al-npreview').textContent=document.getElementById('al-ninp').value.trim();
+  }
+  ['al-step1','al-step2','al-step3'].forEach((id,i)=>document.getElementById(id).style.display=i===n-1?'block':'none');
+  const titles=['Photo & Avatar','Nom & Rôle','Message vocal'];
+  const subs=['Étape 1 sur 3','Étape 2 sur 3','Étape 3 sur 3 (optionnel)'];
+  document.getElementById('al-stitle').textContent=titles[n-1];
+  document.getElementById('al-ssub').textContent=subs[n-1];
+  for(let i=1;i<=3;i++){const d=document.getElementById('al-d'+i);d.className='al-dot'+(i===n?' on':'')+(i<n?' dn':'');}
+}
+
+// ── Enregistrement vocal (MediaRecorder) ─────────────────
+function alResetMic(){
+  alRecActive=false;
+  const b=document.getElementById('al-micbtn');
+  b.className='al-micbtn idle'; b.textContent='🎙️';
+  document.getElementById('al-tmr').textContent='0:00';
+  document.getElementById('al-rstatus').textContent='Appuie pour enregistrer';
+}
+function alToggleRec(){
+  if(alRecActive) alStopRecord();
+  else alStartRecord();
+}
+async function alStartRecord(){
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    alMediaRec=new MediaRecorder(stream);
+    alRecChunks=[];
+    alMediaRec.ondataavailable=e=>alRecChunks.push(e.data);
+    alMediaRec.onstop=()=>{
+      stream.getTracks().forEach(t=>t.stop());
+      const blob=new Blob(alRecChunks,{type:'audio/webm'});
+      const reader=new FileReader();
+      reader.onload=()=>{
+        alAudioB64=reader.result;
+        const b=document.getElementById('al-micbtn');
+        b.className='al-micbtn done'; b.textContent='✅';
+        document.getElementById('al-rstatus').textContent='Super ! 🌟 Appuie pour ré-enregistrer.';
+      };
+      reader.readAsDataURL(blob);
+    };
+    alMediaRec.start();
+    alRecActive=true; alRecSecs=0;
+    const b=document.getElementById('al-micbtn');
+    b.className='al-micbtn rec'; b.textContent='⏹️';
+    document.getElementById('al-rstatus').textContent='Parle maintenant… 🎙️';
+    alRecTimer=setInterval(()=>{
+      alRecSecs++;
+      const m=Math.floor(alRecSecs/60), s=alRecSecs%60;
+      document.getElementById('al-tmr').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+      if(alRecSecs>=30) alStopRecord();
+    },1000);
+  }catch(e){ alToast('🎤 Micro non disponible sur cet appareil'); alResetMic(); }
+}
+function alStopRecord(){
+  clearInterval(alRecTimer); alRecActive=false;
+  if(alMediaRec && alMediaRec.state!=='inactive') alMediaRec.stop();
+}
+
+// ── Sauvegarder membre ───────────────────────────────────
+function alSaveMember(){
+  const nm=document.getElementById('al-ninp').value.trim(); if(!nm){alToast('Entre un prénom 📝');return;}
+  const cr=document.getElementById('al-crole').value.trim(); if(cr) alSelRole=cr;
+  if(!alSelRole){alToast('Choisis un rôle 😊');return;}
+  const ttsVal=document.getElementById('al-ttsinp').value.trim();
+  const m={id:alEditId||alUid(),av:Math.max(0,alSelAv),photo:alPhotoB64||null,role:alSelRole,name:nm,voice:alAudioB64||null,tts:ttsVal||null,added:new Date().toISOString()};
+  if(alEditId){const i=alDb.members.findIndex(x=>x.id===alEditId);if(i!==-1)alDb.members[i]=m;}
+  else alDb.members.push(m);
+  alSave(); alGoTo('al-s-home');
+  setTimeout(()=>{alConfetti();alStars();alTts(`Bravo ! ${nm} est dans l'album !`);},300);
+}
+function alDelMember(id){
+  if(confirm('Supprimer ce membre de l\'album ?')){ alDb.members=alDb.members.filter(x=>x.id!==id); alSave(); alCloseModal(); alRenderGrid(); }
+}
+
+// ── Decoys ───────────────────────────────────────────────
+function alRenderDecoys(){
+  const needed=Math.max(0,2-(alDb.members.length-1));
+  const box=document.getElementById('al-decoy-need');
+  if(alDb.decoys.length<needed && needed>0){
+    box.style.display='block';
+    box.textContent=`⚠️ Ajoute encore ${needed-alDb.decoys.length} visage(s) inconnu(s) pour pouvoir jouer !`;
+  } else box.style.display='none';
+  const grid=document.getElementById('al-decoy-grid');
+  const cards=alDb.decoys.map((d,i)=>{
+    const av=AL_AVATARS[d.av]||AL_AVATARS[0];
+    return `<div class="al-dcard" style="animation-delay:${i*.06}s">
+      <div class="al-dcard-face" style="background:${d.photo?'#f0f0f0':av.bg}">
+        ${d.photo?`<img src="${d.photo}" alt="">`:`${av.e}`}
+      </div>
+      <div class="al-dcard-lbl">Inconnu</div>
+      <button class="al-dcard-del" onclick="alDelDecoy('${d.id}')">✕</button>
+    </div>`;
+  }).join('');
+  const addCard=`<div class="al-dcard al-dcard-add" onclick="document.getElementById('al-decoy-add-modal').classList.add('on')">
+    <div class="al-dcard-face"><span style="font-size:28px;color:#ddd">+</span></div>
+    <div class="al-dcard-lbl">Ajouter</div>
+  </div>`;
+  grid.innerHTML=cards+addCard;
+}
+function alSaveDecoy(photo,avIndex){
+  const d={id:alUid(),av:avIndex!==null?avIndex:Math.floor(Math.random()*AL_AVATARS.length),photo:photo||null};
+  alDb.decoys.push(d); alSave(); alRenderDecoys(); alToast('Visage ajouté ! 🎭');
+}
+function alDelDecoy(id){ alDb.decoys=alDb.decoys.filter(x=>x.id!==id); alSave(); alRenderDecoys(); }
+
+// ── Jeu de la famille ────────────────────────────────────
+function alGameReadyError(){
+  if(!alDb.members.length) return 'Ajoute des membres d\'abord ! 👨‍👩‍👧';
+  const dist=alGetDistractors(null);
+  if(dist.length<2) return `Ajoute ${2-dist.length} visage(s) inconnu(s) pour jouer ! 🎭`;
+  return null;
+}
+function alGetDistractors(excludeId){
+  const others=alDb.members.filter(m=>m.id!==excludeId).map(m=>({...m,_src:'member'}));
+  const decoys=alDb.decoys.map(d=>({...d,_src:'decoy'}));
+  return alShuffle([...others,...decoys]);
+}
+function alTryStartGame(){
+  const err=alGameReadyError();
+  if(err){ alToast(err); return; }
+  alGame.score=0;
+  document.getElementById('al-g-score').textContent='0';
+  alGoTo('al-s-game');
+  alNewRound();
+}
+function alNewRound(){
+  document.getElementById('al-game-need').style.display='none';
+  document.getElementById('al-game-play').style.display='block';
+  alGame.locked=false;
+  const err=alGameReadyError();
+  if(err){
+    document.getElementById('al-game-need').style.display='block';
+    document.getElementById('al-game-play').style.display='none';
+    document.getElementById('al-game-need-msg').textContent=err;
+    return;
+  }
+  const target=alDb.members[Math.floor(Math.random()*alDb.members.length)];
+  alGame.targetId=target.id;
+  const dist=alGetDistractors(target.id).slice(0,2);
+  alGame.choices=alShuffle([{...target,_src:'member'},...dist]);
+  alRenderGameCards();
+  const instr=`Touche ${target.role} !`;
+  document.getElementById('al-gi-text').textContent=instr;
+  setTimeout(()=>alTts(instr),400);
+}
+function alRenderGameCards(){
+  document.getElementById('al-gcards').innerHTML=alGame.choices.map(c=>{
+    const av=AL_AVATARS[c.av]||AL_AVATARS[0];
+    const face=c.photo?`<img src="${c.photo}" alt="" style="width:100%;height:100%;object-fit:cover">`:`${av.e}`;
+    return `<div class="al-gcrd" id="al-gc-${c.id}" onclick="alTapCard('${c.id}')">
+      <div class="al-gcrd-face" style="background:${c.photo?'#f0f0f0':av.bg}">${face}</div>
+      <div class="al-gcrd-tap">Appuie ici !</div>
+    </div>`;
+  }).join('');
+}
+function alTapCard(id){
+  if(alGame.locked) return;
+  const el=document.getElementById('al-gc-'+id);
+  const target=alDb.members.find(x=>x.id===alGame.targetId);
+  if(id===alGame.targetId){
+    alGame.locked=true; alGame.score++;
+    document.getElementById('al-g-score').textContent=alGame.score;
+    el.classList.add('correct'); alConfetti(); alStars(); alShowWinZoom(target);
+    const bravoText=target.voice ? 'Bravo !' : `Bravo ! C'est ${target.role} ${target.name} !`;
+    alTts(bravoText);
+    if(target.voice){
+      setTimeout(()=>{
+        alCurAudio=new Audio(target.voice);
+        alCurAudio.onended=()=>{ setTimeout(()=>{ el.classList.remove('correct'); alNewRound(); },800); };
+        alCurAudio.play().catch(()=>{ setTimeout(()=>{ el.classList.remove('correct'); alNewRound(); },1500); });
+      },1000);
+    } else {
+      const dur=(bravoText.length*70+900)+(target.tts?(target.tts.length*70+800):0);
+      if(target.tts) setTimeout(()=>alTts(target.tts), bravoText.length*70+900);
+      setTimeout(()=>{ el.classList.remove('correct'); alNewRound(); }, dur);
+    }
+  } else {
+    el.classList.add('wrong'); setTimeout(()=>el.classList.remove('wrong'),500);
+    const instrEl=document.getElementById('al-game-instr');
+    instrEl.classList.add('wrong-flash'); setTimeout(()=>instrEl.classList.remove('wrong-flash'),500);
+    const tapped=[...alDb.members,...alDb.decoys].find(x=>x.id===id);
+    let errMsg;
+    if(tapped&&tapped.role&&tapped.name) errMsg=`Non ! Ça c'est ${tapped.role} ${tapped.name} ! Touche ${target.role} ${target.name} !`;
+    else errMsg=`Non, pas celui-là ! Touche ${target.role} ${target.name} !`;
+    alTts(errMsg);
+  }
+}
+function alShowWinZoom(m){
+  const ov=document.getElementById('al-win-zoom-ov');
+  const face=document.getElementById('al-win-zoom-face');
+  const av=AL_AVATARS[m.av]||AL_AVATARS[0];
+  face.innerHTML=m.photo?`<img src="${m.photo}" alt="${m.name}">`:`<span style="font-size:100px">${av.e}</span>`;
+  face.style.background=m.photo?'#f5f5f5':av.bg;
+  document.getElementById('al-win-zoom-name').textContent=`${m.role} ${m.name}`;
+  ov.classList.add('on'); setTimeout(()=>ov.classList.remove('on'),1800);
+}
+function alReplayInstr(){
+  const txt=document.getElementById('al-gi-text').textContent; if(txt) alTts(txt);
+}
+
+// ── Paramètres ───────────────────────────────────────────
+function alSaveTitle(){
+  const v=document.getElementById('al-title-inp').value.trim();
+  if(v){ alDb.title=v; alSave(); alToast('Titre sauvegardé ✅'); }
+}
+function alExportAlbum(){
+  try{
+    const json=localStorage.getItem(AL_KEY)||'{}';
+    const blob=new Blob([json],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='cherina_album.json'; a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
+    alToast('✅ Album exporté !');
+  }catch(e){ alToast('❌ Erreur lors de l\'export'); }
+}
+function alImportAlbum(){
+  const item=document.getElementById('al-import-item');
+  if(item.dataset.confirm!=='1'){
+    item.dataset.confirm='1';
+    item.querySelector('small').textContent='⚠️ Appuie encore pour confirmer — remplace l\'album actuel';
+    item.style.background='#fff8e1';
+    setTimeout(()=>{ item.dataset.confirm='0'; item.querySelector('small').textContent='Restaurer depuis un fichier Chérina'; item.style.background=''; },4000);
+    return;
+  }
+  item.dataset.confirm='0';
+  item.querySelector('small').textContent='Restaurer depuis un fichier Chérina';
+  item.style.background='';
+  const inp=document.getElementById('al-file-import');
+  inp.onchange=e=>{
+    const f=e.target.files[0]; inp.value=''; if(!f) return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const data=JSON.parse(ev.target.result);
+        if(!Array.isArray(data.members)) throw new Error('Format invalide');
+        alDb.members=data.members||[];
+        alDb.decoys=data.decoys||[];
+        alDb.title=data.title||'Mon Album';
+        alSave(); alRenderGrid(); alGoTo('al-s-home');
+        alToast('✅ Album importé avec succès !');
+      }catch{ alToast('❌ Fichier invalide'); }
+    };
+    reader.readAsText(f);
+  };
+  inp.click();
+}
+function alDoReset(){
+  if(confirm('Effacer tout l\'album ?')&&confirm('Vraiment tout effacer ?')){
+    alDb={members:[],decoys:[],title:'Mon Album'}; alSave(); alGoTo('al-s-home'); alToast('Album effacé 👋');
+  }
+}
+
+// ── Utilitaires ──────────────────────────────────────────
+function alShuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=~~(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function alConfetti(){
+  const w=document.getElementById('al-cfw');
+  const cols=['#FF6B35','#FFC947','#4CAF50','#9B59B6','#E91E8C','#3498DB','#fff'];
+  for(let i=0;i<55;i++){
+    const p=document.createElement('div'); p.className='al-piece';
+    p.style.cssText=`left:${Math.random()*100}%;top:-10px;background:${cols[~~(Math.random()*cols.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'3px'};animation:fl linear forwards;animation-duration:${1.4+Math.random()*1.6}s;animation-delay:${Math.random()*.5}s;position:absolute`;
+    w.appendChild(p); setTimeout(()=>p.remove(),3200);
+  }
+}
+function alStars(){
+  const es=['⭐','🌟','✨','💫','🎉','🎊','💕','❤️','🌺','🏆'];
+  for(let i=0;i<7;i++) setTimeout(()=>{
+    const s=document.createElement('div'); s.className='spop';
+    s.textContent=es[~~(Math.random()*es.length)];
+    s.style.cssText=`font-size:${28+~~(Math.random()*18)}px;left:${15+Math.random()*70}%;top:${25+Math.random()*45}%;position:fixed;pointer-events:none;z-index:960;animation:sp .85s ease forwards`;
+    document.body.appendChild(s); setTimeout(()=>s.remove(),950);
+  },i*110);
+}
+
+function alToast(msg){
+  document.querySelectorAll('.al-toast').forEach(t=>t.remove());
+  const t=document.createElement('div'); t.className='al-toast'; t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.style.opacity='0',2100); setTimeout(()=>t.remove(),2500);
+}
+
+// ── Init ─────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('al-modal').addEventListener('click',function(e){ if(e.target===this) alCloseModal(); });
+  // ferme le modal décoy si on clique en dehors
+  document.getElementById('al-decoy-add-modal').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('on'); });
+});
+
+})(); // fin IIFE album
+
 /* ─── SERVICE WORKER ────────────────────────────────────── */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -4895,6 +5719,254 @@ function closePwaBanner(e) {
 
 <!-- Indicateur de verrouillage flottant (visible sur tous les écrans quand verrouillé) -->
 <div id="lock-floating" title="Maintenir 3s pour déverrouiller">🔒</div>
+
+<!-- ══ BOUTON FLOTTANT ALBUM ══ -->
+<button id="album-fab" onclick="alOpen()">
+  <span style="font-size:22px">👨‍👩‍👧</span>
+  <span>Ma Famille</span>
+</button>
+
+<!-- inputs file cachés pour photos -->
+<input type="file" id="al-file-cam"     accept="image/*" capture="environment" style="display:none">
+<input type="file" id="al-file-gallery" accept="image/*"                        style="display:none">
+<input type="file" id="al-file-import"  accept=".json,application/json"         style="display:none">
+
+<!-- ══════════════════════════════════════════════════════════════════
+     OVERLAY ALBUM FAMILIAL
+═══════════════════════════════════════════════════════════════════ -->
+<div id="album-overlay">
+  <div class="al-kente"></div>
+
+  <!-- ── SCREEN HOME ── -->
+  <div id="al-s-home" class="al-scr on">
+    <div class="al-hdr" style="background:linear-gradient(135deg,#FF6B35,#FFC947)">
+      <div>
+        <div class="al-htitle" id="al-album-title">Mon Album</div>
+        <div class="al-hsub">Touche un membre de ta famille !</div>
+      </div>
+      <div class="al-hbtns">
+        <button class="al-ibtn" onclick="alTryStartGame()" title="Jouer">🎮</button>
+        <button class="al-ibtn" onclick="alGoTo('al-s-settings')" title="Paramètres">⚙️</button>
+        <button class="al-ibtn" onclick="alClose()" title="Fermer">✕</button>
+      </div>
+    </div>
+    <div class="al-cnt">
+      <div id="al-empty" class="al-empty" style="display:none">
+        <span class="al-eico">🌟</span>
+        <div class="al-etxt">Ajoute ta première<br>personne adorée ! 💕<br><span style="font-size:12px;color:#ccc">Appuie sur le + en bas</span></div>
+      </div>
+      <div id="al-mgrid" class="al-grid"></div>
+    </div>
+    <button class="al-fab" onclick="alStartAdd()">+</button>
+  </div>
+
+  <!-- ── SCREEN PARAMÈTRES ── -->
+  <div id="al-s-settings" class="al-scr">
+    <div class="al-hdr" style="background:linear-gradient(135deg,#2C1810,#6B3A2A)">
+      <button class="al-ibtn al-bbtn" onclick="alGoTo('al-s-home')">←</button>
+      <div style="flex:1;text-align:center"><div class="al-htitle">Paramètres</div></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="al-cnt">
+      <div style="height:10px"></div>
+      <div class="al-slbl">Titre de l'album</div>
+      <input class="al-inp" id="al-title-inp" placeholder="Ex : Ma Famille ❤️" maxlength="30">
+      <button class="al-btn1" onclick="alSaveTitle()">💾 Enregistrer</button>
+      <div style="margin:22px 0 12px;font-size:15px;font-weight:700;color:#2C1810">Actions</div>
+      <div class="al-sitem" onclick="alGoTo('al-s-decoys')">
+        <span class="al-sico">🎭</span>
+        <div class="al-stxt"><strong>Visages inconnus</strong><small>Ajouter des faux visages pour le jeu</small></div>
+      </div>
+      <div class="al-sitem" onclick="alExportAlbum()">
+        <span class="al-sico">📤</span>
+        <div class="al-stxt"><strong>Exporter l'album</strong><small>Télécharger photos, voix et membres</small></div>
+      </div>
+      <div class="al-sitem" id="al-import-item" onclick="alImportAlbum()">
+        <span class="al-sico">📥</span>
+        <div class="al-stxt"><strong>Importer un album</strong><small>Restaurer depuis un fichier Chérina</small></div>
+      </div>
+      <div class="al-sitem" onclick="alDoReset()">
+        <span class="al-sico">🗑️</span>
+        <div class="al-stxt"><strong>Tout effacer</strong><small>Recommencer à zéro</small></div>
+      </div>
+      <div style="margin:22px 0 12px;font-size:15px;font-weight:700;color:#2C1810">Confidentialité</div>
+      <div class="al-pbox">
+        🔒 <strong>100 % Local</strong><br>Toutes les données, photos et messages vocaux restent uniquement sur cet appareil.<br><br>
+        ☁️ <strong>Aucun serveur</strong><br>Rien n'est envoyé sur Internet. Aucune donnée collectée.<br><br>
+        👶 <strong>Conçu pour les enfants</strong><br>Aucune pub, aucun traceur, aucun compte requis.
+      </div>
+      <div style="text-align:center;margin-top:24px;color:#ccc;font-size:11px">Chérina · Album Familial v1.0<br>Fait avec ❤️ pour toutes les familles</div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN AJOUTER / MODIFIER ── -->
+  <div id="al-s-add" class="al-scr" style="background:#FFF8E7">
+    <div class="al-fhdr" id="al-fhdr" style="background:linear-gradient(135deg,#9B59B6,#3498DB)">
+      <button class="al-ibtn al-bbtn" id="al-add-back">←</button>
+      <div class="al-ftitle" id="al-stitle">Photo & Avatar</div>
+      <div class="al-fsub"   id="al-ssub">Étape 1 sur 3</div>
+    </div>
+    <div class="al-dots">
+      <div class="al-dot on" id="al-d1"></div>
+      <div class="al-dot"    id="al-d2"></div>
+      <div class="al-dot"    id="al-d3"></div>
+    </div>
+    <div class="al-cnt">
+      <!-- Étape 1 -->
+      <div id="al-step1">
+        <div style="text-align:center;margin-bottom:16px">
+          <div class="al-photo-prev" id="al-photo-prev" onclick="alChooseGallery('member')">
+            <span class="al-ph-ico" id="al-ph-ico">📷</span>
+            <img id="al-ph-img" src="" style="display:none" alt="">
+          </div>
+          <div class="al-photo-btns">
+            <div class="al-pbtn" onclick="alOpenCam('member')"><span class="al-pico">📸</span>Appareil photo</div>
+            <div class="al-pbtn" onclick="alChooseGallery('member')"><span class="al-pico">🖼️</span>Galerie</div>
+            <div class="al-pbtn" id="al-del-ph" onclick="alDeletePhoto()" style="display:none"><span class="al-pico">🗑️</span>Supprimer</div>
+          </div>
+        </div>
+        <div class="al-orline">ou choisis un avatar</div>
+        <div class="al-avgrid" id="al-avgrid"></div>
+        <button class="al-btn1" onclick="alGoStep(2)">Suivant ›</button>
+      </div>
+      <!-- Étape 2 -->
+      <div id="al-step2" style="display:none">
+        <div class="al-slbl">Quel est son rôle ?</div>
+        <div class="al-rgrid" id="al-rgrid"></div>
+        <input class="al-inp" id="al-crole" placeholder="Autre rôle… (ex : Tantie, Coach)" maxlength="22">
+        <div class="al-slbl">Son prénom :</div>
+        <input class="al-inp" id="al-ninp" placeholder="Prénom…" maxlength="22">
+        <button class="al-btn1" onclick="alGoStep(3)">Suivant ›</button>
+        <button class="al-btn2" onclick="alGoStep(1)">‹ Retour</button>
+      </div>
+      <!-- Étape 3 -->
+      <div id="al-step3" style="display:none">
+        <div class="al-recwrap">
+          <div class="al-rhint">Enregistre un message pour<br><strong id="al-npreview">ce membre</strong> ! 🎙️</div>
+          <button class="al-micbtn idle" id="al-micbtn" onclick="alToggleRec()">🎙️</button>
+          <div class="al-tmr" id="al-tmr">0:00</div>
+          <div class="al-rhint" id="al-rstatus">Appuie pour enregistrer</div>
+          <div class="al-ttssep">
+            <div class="al-ttslbl">Ou tape un message (lu à voix haute) :</div>
+            <input class="al-inp" id="al-ttsinp" placeholder="Ex : Je t'aime mon chéri ! 😍" maxlength="120">
+          </div>
+        </div>
+        <button class="al-btn1" onclick="alSaveMember()">✅ Ajouter à la famille !</button>
+        <button class="al-btn2" onclick="alGoStep(2)">‹ Retour</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN VISAGES INCONNUS ── -->
+  <div id="al-s-decoys" class="al-scr" style="background:#FFF8E7">
+    <div class="al-hdr" style="background:linear-gradient(135deg,#3498DB,#9B59B6)">
+      <button class="al-ibtn al-bbtn" onclick="alGoTo('al-s-settings')">←</button>
+      <div style="flex:1;text-align:center">
+        <div class="al-htitle">Visages Inconnus</div>
+        <div class="al-hsub">Fausses réponses pour le jeu</div>
+      </div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="al-cnt">
+      <div id="al-decoy-need" class="al-need-box" style="display:none"></div>
+      <div class="al-decoy-grid" id="al-decoy-grid"></div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN JEU ── -->
+  <div id="al-s-game" class="al-scr">
+    <div class="al-game-hdr" style="background:linear-gradient(135deg,#E91E8C,#FF6B35)">
+      <button class="al-ibtn" onclick="alGoTo('al-s-home')">🏠</button>
+      <div class="al-htitle" style="font-size:16px">Jeu de la Famille</div>
+      <div class="al-score-pill">⭐ <span id="al-g-score">0</span></div>
+    </div>
+    <div id="al-game-need" style="display:none;text-align:center;padding:30px 20px">
+      <span style="font-size:52px;display:block;margin-bottom:12px">🎭</span>
+      <div id="al-game-need-msg" style="font-size:16px;color:#888;line-height:1.7;margin-bottom:24px"></div>
+      <button class="al-btn1" onclick="alGoTo('al-s-decoys')" style="max-width:260px;margin:0 auto">➕ Ajouter des visages inconnus</button>
+      <button class="al-btn2" onclick="alGoTo('al-s-home')"   style="max-width:260px;margin:10px auto 0">← Retour à l'album</button>
+    </div>
+    <div id="al-game-play" style="display:none">
+      <div class="al-game-instr" id="al-game-instr">
+        <div class="al-gi-text" id="al-gi-text">Touche Papa !</div>
+        <button class="al-gi-replay" onclick="alReplayInstr()">🔊</button>
+      </div>
+      <div class="al-game-cards" id="al-gcards"></div>
+      <div class="al-game-footer">
+        <button class="al-gfbtn ghost"   onclick="alGoTo('al-s-home')">🏠 Quitter</button>
+        <button class="al-gfbtn primary" onclick="alNewRound()">🎲 Nouveau</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL MEMBRE ── -->
+  <div id="al-modal" class="al-ov">
+    <div class="al-mo">
+      <button class="al-mclose" onclick="alCloseModal()">✕</button>
+      <div class="al-mav" id="al-mav"></div>
+      <div class="al-mrole" id="al-mrole"></div>
+      <div class="al-mname" id="al-mname"></div>
+      <div class="al-wav off" id="al-wav">
+        <div class="al-bar"></div><div class="al-bar"></div><div class="al-bar"></div>
+        <div class="al-bar"></div><div class="al-bar"></div><div class="al-bar"></div>
+      </div>
+      <button class="al-lovebtn" onclick="alSendLove()">💕 Envoyer des bisous !</button>
+      <div class="al-arow">
+        <button class="al-mbtn" onclick="alEditMember(alActiveId)">✏️ Modifier</button>
+        <button class="al-mbtn red" onclick="alDelMember(alActiveId)">🗑️ Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL CROP ── -->
+  <div id="al-crop-ov" class="al-crop-ov">
+    <div class="al-crop-title">Cadre le visage 😊</div>
+    <div class="al-crop-sub">Glisse pour repositionner · Zoom avec le curseur</div>
+    <div class="al-crop-ring" id="al-crop-ring">
+      <img id="al-crop-img-el" src="" alt="">
+    </div>
+    <div class="al-crop-controls">
+      <div class="al-crop-zoom-row">
+        <label>🔍</label>
+        <input type="range" id="al-crop-zoom" min="100" max="350" value="100" oninput="alOnZoomChange(this.value)">
+        <label>🔎</label>
+      </div>
+      <div class="al-crop-btns">
+        <button class="al-crop-btn cancel" onclick="alCancelCrop()">Reprendre</button>
+        <button class="al-crop-btn ok"     onclick="alConfirmCrop()">✅ Valider</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL AJOUTER VISAGE INCONNU ── -->
+  <div id="al-decoy-add-modal" class="al-ov" style="z-index:750">
+    <div class="al-decoy-add-mo">
+      <button class="al-mclose" onclick="document.getElementById('al-decoy-add-modal').classList.remove('on')">✕</button>
+      <div style="font-size:20px;font-weight:700;color:#2C1810;margin-bottom:6px;text-align:center">Ajouter un visage</div>
+      <div style="font-size:13px;color:#bbb;text-align:center;margin-bottom:22px">Ce visage sera une fausse réponse dans le jeu</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="al-pbtn" style="max-width:100%;flex-direction:row;padding:16px 20px;gap:14px;font-size:16px;border-radius:14px"
+             onclick="document.getElementById('al-decoy-add-modal').classList.remove('on');alOpenCam('decoy')">
+          <span style="font-size:28px">📸</span> Prendre une photo
+        </div>
+        <div class="al-pbtn" style="max-width:100%;flex-direction:row;padding:16px 20px;gap:14px;font-size:16px;border-radius:14px"
+             onclick="document.getElementById('al-decoy-add-modal').classList.remove('on');alChooseGallery('decoy')">
+          <span style="font-size:28px">🖼️</span> Choisir dans la galerie
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── WIN ZOOM ── -->
+  <div id="al-win-zoom-ov" class="al-win-zoom-ov">
+    <div class="al-win-zoom-face" id="al-win-zoom-face"></div>
+    <div class="al-win-zoom-name" id="al-win-zoom-name"></div>
+  </div>
+
+  <!-- ── CONFETTI ── -->
+  <div id="al-cfw" class="al-cfw"></div>
+</div>
+<!-- ── FIN OVERLAY ALBUM ── -->
 
 </body>
 </html>

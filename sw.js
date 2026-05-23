@@ -1,4 +1,4 @@
-const CACHE = 'cherina-v8';
+const CACHE = 'cherina-v9';
 
 const ASSETS = [
   './index.html',
