@@ -884,6 +884,53 @@ body.game-locked .tab-bar     { pointer-events: none !important; opacity: 0.6; }
 .card-7 { background: linear-gradient(130deg, #FF9F0A, #FF6347); }
 .card-8 { background: linear-gradient(130deg, #30D158, #0A84FF); }
 
+/* ===== RANGÉE DÉFI — 3 éléments garantis visibles ===== */
+.challenge-row {
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  transform: translateY(-55%); /* légèrement au-dessus du centre pour compenser l'instruction */
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-end;
+  gap: clamp(6px, 2vw, 14px);
+  padding: 0 clamp(8px, 2.5vw, 16px);
+  pointer-events: none;
+}
+.challenge-row > * { pointer-events: auto; }
+
+/* Taille réduite dans un défi pour tenir à 3 */
+.challenge-row .balloon-wrap,
+.challenge-row .num-card-wrap,
+.challenge-row .animal-card-wrap { position: static !important; }
+
+.challenge-row .balloon-body {
+  width: clamp(88px, 26vw, 118px);
+  height: clamp(108px, 32vw, 146px);
+}
+.challenge-row .balloon-string { height: clamp(24px, 6vw, 38px); }
+.challenge-row .balloon-knot   { width: clamp(8px, 2.4vw, 12px); height: clamp(8px, 2.4vw, 12px); }
+
+.challenge-row .animal-card {
+  width: clamp(90px, 27vw, 122px);
+  height: clamp(100px, 29vw, 134px);
+  border-width: 4px;
+  gap: 4px;
+}
+.challenge-row .animal-emoji {
+  width: clamp(60px, 17vw, 88px);
+  height: clamp(60px, 17vw, 88px);
+}
+.challenge-row .animal-label-card { font-size: clamp(0.7rem, 2.6vw, 0.88rem); }
+
+.challenge-row .num-card-wrap,
+.challenge-row .num-card {
+  width: clamp(90px, 26vw, 118px);
+  height: clamp(90px, 26vw, 118px);
+  font-size: clamp(2.8rem, 9vw, 4.5rem);
+}
+
 /* ===== ANIMAL CARDS (levels 7-8) ===== */
 .animal-card-wrap {
   position: absolute;
@@ -1186,16 +1233,15 @@ body.game-locked .tab-bar     { pointer-events: none !important; opacity: 0.6; }
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  padding-top: 4px;
+  justify-content: center;
   position: relative;
   width: 100%;
 }
 
 #bg-svg {
-  height: min(78vh, calc(88vw * 459 / 200));
+  height: min(74vh, calc(86vw * 459 / 200));
   width: auto;
-  max-width: 88vw;
+  max-width: 86vw;
   cursor: pointer;
   touch-action: manipulation;
   filter: drop-shadow(0 10px 26px rgba(0,0,0,0.22));
@@ -3714,17 +3760,17 @@ function newRound3() {
 
   speak(`Touche le ballon ${target.label} !`, 0.75, 1.22);
 
-  const positions = spreadPositions(count);
-  sample.forEach((color, i) => {
+  const row = document.createElement('div');
+  row.className = 'challenge-row';
+  sample.forEach((color) => {
     const wrap = buildBalloon(color, true);
-    wrap.style.left = positions[i].x + 'px';
-    wrap.style.top  = positions[i].y + 'px';
     wrap.style.animationDuration = (2.2 + Math.random() * 1.4) + 's';
-    wrap.style.animationDelay    = (Math.random() * 1.2) + 's';
-    wrap.style.setProperty('--rot', rand(-20, 20) + 'deg');
+    wrap.style.animationDelay    = (Math.random() * 0.8) + 's';
+    wrap.style.setProperty('--rot', rand(-12, 12) + 'deg');
     on(wrap, () => onLevel3Touch(wrap, color));
-    arena.appendChild(wrap);
+    row.appendChild(wrap);
   });
+  arena.appendChild(row);
 }
 
 function onLevel3Touch(wrap, color) {
@@ -3808,16 +3854,16 @@ function newNumberChallenge() {
 
   speak(`Touche le chiffre ${target.spoken} !`, 0.75, 1.22);
 
-  const positions = spreadPositions(3, 174, 172);
-  sample.forEach((num, i) => {
+  const row = document.createElement('div');
+  row.className = 'challenge-row';
+  sample.forEach((num) => {
     const wrap = buildNumberCard(num);
-    wrap.style.left = positions[i].x + 'px';
-    wrap.style.top  = positions[i].y + 'px';
     wrap.style.animationDuration = (2.2 + Math.random() * 1.4) + 's';
-    wrap.style.animationDelay    = (Math.random() * 1.2) + 's';
+    wrap.style.animationDelay    = (Math.random() * 0.8) + 's';
     on(wrap, () => onNumberChallengeTouch(wrap, num));
-    arena.appendChild(wrap);
+    row.appendChild(wrap);
   });
+  arena.appendChild(row);
 }
 
 function onNumberChallengeTouch(wrap, num) {
@@ -3984,16 +4030,16 @@ function newAnimalChallenge() {
 
   speak(`Touche ${target.art}${target.label} !`, 0.75, 1.22);
 
-  const positions = spreadPositions(3, 186, 210);
-  sample.forEach((animal, i) => {
+  const row = document.createElement('div');
+  row.className = 'challenge-row';
+  sample.forEach((animal) => {
     const wrap = buildAnimalCard(animal, true);
-    wrap.style.left = positions[i].x + 'px';
-    wrap.style.top  = positions[i].y + 'px';
     wrap.style.animationDuration = (2.2 + Math.random() * 1.4) + 's';
-    wrap.style.animationDelay    = (Math.random() * 1.2) + 's';
+    wrap.style.animationDelay    = (Math.random() * 0.8) + 's';
     on(wrap, () => onAnimalChallengeTouch(wrap, animal));
-    arena.appendChild(wrap);
+    row.appendChild(wrap);
   });
+  arena.appendChild(row);
 }
 
 function onAnimalChallengeTouch(wrap, animal) {
