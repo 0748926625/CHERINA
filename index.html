@@ -4405,26 +4405,55 @@ function addClouds() {
   });
 }
 
-/* ─── POSITION SPREADER ─────────────────────────────────── */
+/* ─── GRILLE DE SECOURS (portée depuis cherina-expo) ─────── */
+function makeGrid(n, sW, sH, pad, top, bot, W, H) {
+  const areaW = W - pad * 2;
+  const areaH = Math.max(sH + 10, H - top - bot);
+  const maxCols = Math.max(1, Math.floor((areaW + 10) / (sW + 10)));
+  const cols    = Math.min(n, maxCols);
+  const rows    = Math.ceil(n / cols);
+  const cellW   = areaW / cols;
+  const cellH   = areaH / rows;
+  const grid    = [];
+  for (let r = 0; r < rows && grid.length < n; r++) {
+    const inRow    = (r === rows - 1 && n % cols !== 0) ? n % cols : cols;
+    const rowShift = (areaW - inRow * cellW) / 2;
+    for (let c = 0; c < inRow && grid.length < n; c++) {
+      grid.push({
+        x: clamp(pad + rowShift + c * cellW + (cellW - sW) / 2, pad, W - sW - pad),
+        y: clamp(top + r * cellH + (cellH - sH) / 2,            top, Math.max(top, H - sH - bot))
+      });
+    }
+  }
+  return grid;
+}
+
+/* ─── POSITION SPREADER (portée depuis cherina-expo) ─────── */
+/* Sur écrans < 500px (téléphones) : grille directe garantie.
+   Sur grands écrans : aléatoire avec grille en secours.        */
 function spreadPositions(n, itemW = 166, itemH = 256) {
   const W = gw(), H = gh();
-  const top = 100, bot = 148;
+  const scale = Math.min(1, W / 420);
+  const sW    = Math.round(itemW * scale);
+  const sH    = Math.round(itemH * scale);
+  const pad   = 12, top = 90, bot = 110;
+
+  if (W < 500) return makeGrid(n, sW, sH, pad, top, bot, W, H);
+
+  const minGapX = sW + 14;
+  const minGapY = sH + 12;
   const out = [];
   let tries = 0;
-  while (out.length < n && tries < 400) {
+  while (out.length < n && tries < 600) {
     tries++;
-    const p = { x: rand(16, W - itemW - 16), y: rand(top, H - itemH - bot) };
-    const minGapX = itemW + 24;
-    const minGapY = itemH + 16;
+    const p = { x: rand(pad, W - sW - pad), y: rand(top, Math.max(top + 1, H - sH - bot)) };
     if (out.every(q => Math.abs(q.x - p.x) > minGapX || Math.abs(q.y - p.y) > minGapY))
       out.push(p);
   }
-  return out;
+  return out.length >= n ? out : makeGrid(n, sW, sH, pad, top, bot, W, H);
 }
 
-/* ─── SPREAD DÉFI — aléatoire garanti sur petit écran ───── */
-/* Utilise spreadPositions avec les vraies tailles réduites
-   calculées selon le viewport pour éviter tout débordement.  */
+/* ─── SPREAD DÉFI — appelle spreadPositions avec tailles CSS réelles ── */
 function challengeSpread(iW, iH) {
   return spreadPositions(3, iW, iH);
 }
