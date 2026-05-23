@@ -2070,6 +2070,160 @@ body.game-locked .tab-btn[data-tab="album"] { pointer-events: none; opacity: .5;
 /* ── Toast ── */
 .al-toast { position:fixed; bottom:104px; left:50%; transform:translateX(-50%); background:rgba(44,24,16,.9); color:#fff; padding:12px 20px; border-radius:50px; font-family:system-ui,sans-serif; font-size:15px; z-index:1000; animation:alFadeIn .2s ease; box-shadow:0 4px 14px rgba(0,0,0,.28); white-space:nowrap; }
 
+/* ═══════ SYSTÈME CADEAUX & PARAMÈTRES ═══════ */
+#btn-settings-home {
+  position: absolute;
+  top: calc(max(env(safe-area-inset-top,0px),10px) + clamp(50px,13vw,62px) + 10px);
+  right: clamp(12px,3.5vw,20px);
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border: none; border-radius: 50%;
+  width: clamp(38px,10vw,46px); height: clamp(38px,10vw,46px);
+  font-size: clamp(1rem,3.8vw,1.25rem);
+  cursor: pointer; display: grid; place-items: center;
+  z-index: 20; box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  transition: transform .12s, background .2s;
+  touch-action: none; user-select: none; -webkit-user-select: none;
+}
+#btn-settings-home:active { transform: scale(0.88); }
+#btn-settings-home.holding { background: rgba(124,58,237,0.55); animation: settHoldPulse 1.5s linear forwards; }
+@keyframes settHoldPulse {
+  0%   { box-shadow: 0 0 0 0   rgba(124,58,237,0.7); }
+  100% { box-shadow: 0 0 0 16px rgba(124,58,237,0); }
+}
+
+/* Overlay cadeau enfant */
+#gift-overlay {
+  display: none; position: fixed; inset: 0; z-index: 2000;
+  background: linear-gradient(160deg,#1a0533,#3b1078,#1a0533);
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px; padding: 24px 20px;
+}
+#gift-overlay.show { display: flex; }
+.gift-box-anim {
+  font-size: clamp(5rem,22vw,8rem);
+  animation: giftBounce 0.9s ease-in-out infinite alternate;
+  filter: drop-shadow(0 8px 24px rgba(255,200,0,0.5));
+}
+@keyframes giftBounce {
+  from { transform: translateY(0) rotate(-5deg); }
+  to   { transform: translateY(-18px) rotate(5deg); }
+}
+.gift-title {
+  font-size: clamp(1.5rem,6.5vw,2.2rem); font-weight: 900;
+  color: #FFD60A; text-align: center; text-shadow: 0 3px 12px rgba(0,0,0,0.4);
+}
+.gift-subtitle {
+  font-size: clamp(1rem,4.5vw,1.4rem);
+  color: rgba(255,255,255,0.9); text-align: center; line-height: 1.6;
+}
+.gift-parent-btn {
+  margin-top: 12px;
+  background: linear-gradient(135deg,#7C3AED,#4F46E5); color: #fff;
+  border: none; border-radius: 50px; padding: 16px 32px;
+  font-size: clamp(1rem,4vw,1.2rem); font-weight: 800; cursor: pointer;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.3), 0 10px 28px rgba(79,70,229,0.4);
+  position: relative; overflow: hidden;
+  touch-action: none; user-select: none; -webkit-user-select: none;
+}
+.gift-hold-bar {
+  position: absolute; left: 0; bottom: 0; height: 5px;
+  background: rgba(255,255,255,0.65); width: 0%;
+  border-radius: 0 0 50px 50px;
+  transition: none;
+}
+.gift-parent-btn.holding .gift-hold-bar { width: 100%; transition: width 1.9s linear; }
+
+/* Overlay révélation parent */
+#gift-reveal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 2100;
+  background: linear-gradient(160deg,#FFF8E7,#FFE8B0);
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 20px; padding: 30px 24px;
+}
+#gift-reveal-overlay.show { display: flex; }
+.gift-reveal-emoji {
+  font-size: clamp(5rem,24vw,9rem);
+  animation: giftPop .5s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes giftPop { from { transform:scale(0); opacity:0; } to { transform:scale(1); opacity:1; } }
+.gift-reveal-label {
+  font-size: clamp(1.5rem,6.5vw,2.2rem); font-weight: 900;
+  color: #1a0533; text-align: center;
+}
+.gift-reveal-for {
+  font-size: clamp(0.95rem,3.8vw,1.15rem); color: #7C3AED;
+  font-weight: 700; text-align: center;
+}
+.gift-close-btn {
+  margin-top: 8px;
+  background: linear-gradient(135deg,#30D158,#059669); color: #fff;
+  border: none; border-radius: 50px; padding: 14px 36px;
+  font-size: clamp(1rem,4vw,1.15rem); font-weight: 800; cursor: pointer;
+  box-shadow: 0 5px 0 rgba(0,0,0,0.2), 0 8px 20px rgba(5,150,105,0.35);
+}
+
+/* Panel paramètres */
+#settings-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1800;
+  background: rgba(0,0,0,0.72);
+  align-items: center; justify-content: center; padding: 16px;
+}
+#settings-overlay.show { display: flex; }
+.settings-panel {
+  background: linear-gradient(160deg,#1e1040,#2d1b69);
+  border-radius: 28px; padding: 24px 20px 28px;
+  width: min(94vw,400px); max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5); position: relative; color: #fff;
+}
+.settings-panel h2 {
+  font-size: clamp(1.2rem,5vw,1.5rem); font-weight: 900;
+  text-align: center; margin: 0 0 20px; color: #FFD60A;
+}
+.settings-close-btn {
+  position: absolute; top: 14px; right: 14px;
+  background: rgba(255,255,255,0.15); border: none; border-radius: 50%;
+  width: 36px; height: 36px; font-size: 1rem; cursor: pointer;
+  color: #fff; display: grid; place-items: center;
+}
+.settings-section { margin-bottom: 22px; }
+.settings-section h3 {
+  font-size: 0.78rem; font-weight: 800; color: rgba(255,255,255,0.55);
+  text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px;
+}
+.freq-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+.freq-btn {
+  background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 14px; color: #fff; font-size: 1.1rem; font-weight: 800;
+  padding: 12px 4px; cursor: pointer; transition: background .15s, border-color .15s;
+}
+.freq-btn.active {
+  background: linear-gradient(135deg,#7C3AED,#4F46E5); border-color: #7C3AED;
+  box-shadow: 0 4px 14px rgba(124,58,237,0.4);
+}
+.gift-toggle-list { display: flex; flex-direction: column; gap: 8px; }
+.gift-toggle-row {
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(255,255,255,0.07); border-radius: 14px;
+  padding: 11px 14px; cursor: pointer; transition: background .15s;
+  border: 2px solid transparent;
+}
+.gift-toggle-row.active { background: rgba(124,58,237,0.25); border-color: rgba(124,58,237,0.5); }
+.gift-toggle-emoji { font-size: 1.5rem; }
+.gift-toggle-label { flex: 1; font-size: clamp(0.9rem,3.5vw,1rem); font-weight: 700; }
+.gift-toggle-check { font-size: 1.1rem; }
+.settings-progress {
+  background: rgba(255,255,255,0.08); border-radius: 14px;
+  padding: 14px; text-align: center;
+}
+.settings-progress-val { font-size: 2.2rem; font-weight: 900; color: #FFD60A; }
+.settings-progress-lbl { font-size: 0.8rem; color: rgba(255,255,255,0.55); margin-top: 2px; }
+.settings-reset-btn {
+  background: rgba(255,80,80,0.2); border: 1px solid rgba(255,80,80,0.35);
+  border-radius: 10px; color: #ff9090; padding: 7px 14px;
+  font-size: 0.8rem; font-weight: 700; cursor: pointer; margin-top: 8px;
+}
+
 /* ── Ajouter visage modal ── */
 #album-overlay .al-decoy-add-mo { background:#fff; border-radius:30px; padding:28px 22px 22px; max-width:330px; width:100%; position:relative; animation:alMoIn .3s ease; }
 </style>
@@ -2093,6 +2247,7 @@ body.game-locked .tab-btn[data-tab="album"] { pointer-events: none; opacity: .5;
   <div id="piano-arena"></div>
   <button class="btn-mute-global" id="btn-mute-global" onclick="toggleGlobalMusic()" title="Couper / relancer la musique">🔊</button>
   <button class="btn-lock-home" id="btn-lock-home" onclick="quickLock()" title="Verrouiller le jeu">🔓</button>
+  <button id="btn-settings-home" title="Paramètres cadeaux (maintenir)">⚙️</button>
 
   <div class="home-logo">🎈</div>
   <h1 class="home-title">Chérina apprend !</h1>
@@ -2599,12 +2754,14 @@ const PALETTE = {
 PALETTE[3] = PALETTE[2];
 
 /* ─── CHIFFRES ──────────────────────────────────────────── */
+/* Couleur unique pour tous les chiffres → évite la confusion chiffre/couleur */
+const NUM_HEX = '#FF8C42';
 const NUMBERS = [
-  { id:1, label:'1', spoken:'Un',     hex:'#FF3B30' },
-  { id:2, label:'2', spoken:'Deux',   hex:'#007AFF' },
-  { id:3, label:'3', spoken:'Trois',  hex:'#30D158' },
-  { id:4, label:'4', spoken:'Quatre', hex:'#FF9F0A' },
-  { id:5, label:'5', spoken:'Cinq',   hex:'#BF5AF2' },
+  { id:1, label:'1', spoken:'Un',     hex: NUM_HEX },
+  { id:2, label:'2', spoken:'Deux',   hex: NUM_HEX },
+  { id:3, label:'3', spoken:'Trois',  hex: NUM_HEX },
+  { id:4, label:'4', spoken:'Quatre', hex: NUM_HEX },
+  { id:5, label:'5', spoken:'Cinq',   hex: NUM_HEX },
 ];
 
 /* ─── PARTIES DU CORPS ─────────────────────────────────── */
@@ -3099,6 +3256,23 @@ function speak(text, rate = 0.78, pitch = 1.25) {
     if (frVoice) u.voice = frVoice;
     synth.speak(u);
   } catch(e) {}
+}
+
+/* Joue plusieurs messages à la suite sans se couper */
+function speakSeq(items, onDone) {
+  if (!synth) { if (onDone) onDone(); return; }
+  synth.cancel();
+  function next(i) {
+    if (i >= items.length) { if (onDone) onDone(); return; }
+    const { text, rate = 0.78, pitch = 1.25 } = items[i];
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'fr-FR'; u.rate = rate; u.pitch = pitch; u.volume = 1;
+    if (frVoice) u.voice = frVoice;
+    u.onend  = () => next(i + 1);
+    u.onerror = () => next(i + 1);
+    synth.speak(u);
+  }
+  next(0);
 }
 
 /* ─── STATE ────────────────────────────────────────────── */
@@ -3944,6 +4118,7 @@ function startGame(lvl) {
     speak('Chérina, trouve le bon ballon !', 0.8, 1.2);
     setTimeout(newRound3, 700);
   } else if (lvl === 4) {
+    _numDiscoverIdx = 0;
     speak('Chérina, touche le chiffre !', 0.8, 1.2);
     setTimeout(newNumberBalloon, 700);
   } else if (lvl === 5) {
@@ -4087,12 +4262,14 @@ function onLevel3Touch(wrap, color) {
 }
 
 /* ─── LEVEL 4 — DÉCOUVERTE DES CHIFFRES ────────────────── */
+let _numDiscoverIdx = 0;
+
 function newNumberBalloon() {
   if (busy) return;
   const arena = document.getElementById('arena');
   arena.innerHTML = '';
 
-  const num  = pick(NUMBERS);
+  const num = NUMBERS[_numDiscoverIdx % NUMBERS.length];
   const wrap = buildNumberCard(num);
 
   const W = gw(), H = gh();
@@ -4108,6 +4285,7 @@ function newNumberBalloon() {
 function onNumberTouch(wrap, num) {
   if (busy) return;
   busy = true;
+  _numDiscoverIdx++;
 
   popNumberCard(wrap, num.hex);
   playWin();
@@ -4198,7 +4376,10 @@ function newCountingRound() {
     wraps.push(wrap);
   }
 
-  // Compte à voix haute avec highlight de chaque ballon
+  // Trier les ballons de gauche à droite avant de compter
+  wraps.sort((a, b) => parseFloat(a.style.left) - parseFloat(b.style.left));
+
+  // Compte à voix haute avec highlight de chaque ballon (gauche → droite)
   let delay = 900;
   speak('Comptons !', 0.8, 1.2);
   for (let i = 0; i < countingN; i++) {
@@ -4695,6 +4876,7 @@ function confettiRain() {
 function addStar() {
   stars++;
   updateStars();
+  checkGiftTrigger();
 }
 function updateStars() {
   document.getElementById('star-badge').textContent = `⭐ ${stars}`;
@@ -5155,7 +5337,7 @@ function nextMatchRound() {
   const item = pick(pool);
   matchG.currentItem = item;
   const cards = genCountingPairs(item);
-  const instr = `Compte les ${pluralFrMatch(item.spoken)} !`;
+  const instr = `Associe les ${pluralFrMatch(item.spoken)} semblables !`;
   matchG.cards = cards.map((c, i) => ({ ...c, idx:i, matched:false, el:null }));
   matchG.pairs = matchG.cards.length / 2;
   document.getElementById('match-instr').textContent = instr;
@@ -5186,11 +5368,7 @@ function onMatchTap(idx) {
     speak(fixSpokenFr(card.spoken), 0.78, 1.1);
     return;
   }
-  if (matchG.selected === idx) {
-    card.el.classList.remove('selected');
-    matchG.selected = null;
-    return;
-  }
+  if (matchG.selected === idx) return; // tap répété → on ignore
   const first  = matchG.cards[matchG.selected];
   const second = card;
   first.el.classList.remove('selected');
@@ -5202,15 +5380,19 @@ function onMatchTap(idx) {
     second.el.classList.add('matched-ok');
     matchG.matched++;
     confettiRain();
-    speak(fixSpokenFr(first.spoken), 0.75, 1.2);
     if (matchG.matched === matchG.pairs) {
       matchG.score++;
       document.getElementById('match-score').textContent = `⭐ ${matchG.score}`;
-      setTimeout(() => speak(pickBravo(), 0.75, 1.35), 750);
-      setTimeout(() => speak('Bravo ! Tu as tout compté !', 0.75, 1.2), 1600);
-      setTimeout(nextMatchRound, 3200);
+      speakSeq([
+        { text: fixSpokenFr(first.spoken), rate: 0.75, pitch: 1.2  },
+        { text: pickBravo(),               rate: 0.75, pitch: 1.35 },
+        { text: 'Bravo ! Tu as tout associé !', rate: 0.75, pitch: 1.2 },
+      ], () => setTimeout(nextMatchRound, 500));
     } else {
-      setTimeout(() => speak(pickBravo(), 0.75, 1.35), 750);
+      speakSeq([
+        { text: fixSpokenFr(first.spoken), rate: 0.75, pitch: 1.2  },
+        { text: pickBravo(),               rate: 0.75, pitch: 1.35 },
+      ]);
     }
   } else {
     vibrateError();
@@ -5883,6 +6065,157 @@ function triggerPwaInstall() {
   alert(msg);
 }
 
+/* ═══════════════════════════════════════════════════════════
+   SYSTÈME CADEAUX & PARAMÈTRES
+═══════════════════════════════════════════════════════════ */
+const GIFT_CATALOG = [
+  { id:'biscuit',  emoji:'🍪', label:'Un biscuit'        },
+  { id:'chocolat', emoji:'🍫', label:'Du chocolat'       },
+  { id:'bisou',    emoji:'😘', label:'Un gros bisou'     },
+  { id:'calin',    emoji:'🤗', label:'Un câlin'          },
+  { id:'bonbon',   emoji:'🍭', label:'Un bonbon'         },
+  { id:'histoire', emoji:'📖', label:'Une histoire'      },
+  { id:'chanson',  emoji:'🎵', label:'Une chanson'       },
+  { id:'sortie',   emoji:'🌳', label:'Une sortie dehors' },
+];
+const GIFT_FREQ_OPTIONS = [3, 5, 10, 15];
+
+let giftCfg      = { frequency: 5, active: ['biscuit','chocolat','bisou','calin'] };
+let giftProgress = 0;
+
+function loadGiftCfg() {
+  try {
+    const s = localStorage.getItem('cherina_gift_cfg');
+    if (s) giftCfg = JSON.parse(s);
+    const p = localStorage.getItem('cherina_gift_progress');
+    if (p !== null) giftProgress = parseInt(p) || 0;
+  } catch(e) {}
+}
+function saveGiftCfg() {
+  try {
+    localStorage.setItem('cherina_gift_cfg', JSON.stringify(giftCfg));
+    localStorage.setItem('cherina_gift_progress', String(giftProgress));
+  } catch(e) {}
+}
+
+function checkGiftTrigger() {
+  if (!giftCfg.frequency || !giftCfg.active.length) return;
+  giftProgress++;
+  saveGiftCfg();
+  if (giftProgress >= giftCfg.frequency) {
+    giftProgress = 0;
+    saveGiftCfg();
+    setTimeout(showGiftEarned, 1200);
+  }
+}
+
+function showGiftEarned() {
+  synth && synth.cancel();
+  confettiRain();
+  setTimeout(confettiRain, 500);
+  speak('Bravo ! Tu as gagné un cadeau ! Donne le téléphone à papa ou maman !', 0.72, 1.2);
+  document.getElementById('gift-overlay').classList.add('show');
+}
+
+/* Bouton "Je suis papa/maman" — maintenir 1.9s */
+let _giftHoldTimer = null;
+function initGiftParentBtn() {
+  const btn = document.getElementById('gift-parent-btn');
+  if (!btn) return;
+  const start = () => {
+    btn.classList.add('holding');
+    _giftHoldTimer = setTimeout(() => {
+      btn.classList.remove('holding');
+      document.getElementById('gift-overlay').classList.remove('show');
+      revealGift();
+    }, 1950);
+  };
+  const cancel = () => { btn.classList.remove('holding'); clearTimeout(_giftHoldTimer); };
+  btn.addEventListener('mousedown',   start);
+  btn.addEventListener('touchstart',  e => { e.preventDefault(); start(); }, { passive:false });
+  btn.addEventListener('mouseup',     cancel);
+  btn.addEventListener('mouseleave',  cancel);
+  btn.addEventListener('touchend',    cancel);
+  btn.addEventListener('touchcancel', cancel);
+}
+
+function revealGift() {
+  const pool = GIFT_CATALOG.filter(g => giftCfg.active.includes(g.id));
+  const gift = pool.length ? pick(pool) : GIFT_CATALOG[0];
+  document.getElementById('gift-reveal-emoji').textContent = gift.emoji;
+  document.getElementById('gift-reveal-label').textContent = gift.label + ' !';
+  confettiRain();
+  document.getElementById('gift-reveal-overlay').classList.add('show');
+  speak(gift.label + ' pour Chérina !', 0.75, 1.2);
+}
+function closeGiftReveal() {
+  document.getElementById('gift-reveal-overlay').classList.remove('show');
+}
+
+/* ── Bouton ⚙️ — maintenir 1.5s pour ouvrir ── */
+let _settHoldTimer = null;
+function initSettingsBtn() {
+  const btn = document.getElementById('btn-settings-home');
+  if (!btn) return;
+  const start = () => {
+    btn.classList.add('holding');
+    _settHoldTimer = setTimeout(() => { btn.classList.remove('holding'); openSettings(); }, 1500);
+  };
+  const cancel = () => { btn.classList.remove('holding'); clearTimeout(_settHoldTimer); };
+  btn.addEventListener('mousedown',   start);
+  btn.addEventListener('touchstart',  e => { e.preventDefault(); start(); }, { passive:false });
+  btn.addEventListener('mouseup',     cancel);
+  btn.addEventListener('mouseleave',  cancel);
+  btn.addEventListener('touchend',    cancel);
+  btn.addEventListener('touchcancel', cancel);
+}
+
+function openSettings() {
+  renderSettingsPanel();
+  document.getElementById('settings-overlay').classList.add('show');
+}
+function closeSettings() {
+  document.getElementById('settings-overlay').classList.remove('show');
+}
+function renderSettingsPanel() {
+  document.getElementById('sett-progress-val').textContent = giftProgress;
+  // Fréquence
+  const fg = document.getElementById('sett-freq-grid');
+  fg.innerHTML = '';
+  GIFT_FREQ_OPTIONS.forEach(n => {
+    const b = document.createElement('button');
+    b.className = 'freq-btn' + (giftCfg.frequency === n ? ' active' : '');
+    b.textContent = n;
+    b.onclick = () => { giftCfg.frequency = n; saveGiftCfg(); renderSettingsPanel(); };
+    fg.appendChild(b);
+  });
+  // Types
+  const gl = document.getElementById('sett-gift-list');
+  gl.innerHTML = '';
+  GIFT_CATALOG.forEach(g => {
+    const isOn = giftCfg.active.includes(g.id);
+    const row  = document.createElement('div');
+    row.className = 'gift-toggle-row' + (isOn ? ' active' : '');
+    row.innerHTML = `<span class="gift-toggle-emoji">${g.emoji}</span>
+      <span class="gift-toggle-label">${g.label}</span>
+      <span class="gift-toggle-check">${isOn ? '✅' : '⬜'}</span>`;
+    row.onclick = () => {
+      if (isOn) { if (giftCfg.active.length > 1) giftCfg.active = giftCfg.active.filter(id => id !== g.id); }
+      else giftCfg.active.push(g.id);
+      saveGiftCfg(); renderSettingsPanel();
+    };
+    gl.appendChild(row);
+  });
+}
+function resetGiftProgress() {
+  giftProgress = 0; saveGiftCfg();
+  document.getElementById('sett-progress-val').textContent = '0';
+}
+
+loadGiftCfg();
+initSettingsBtn();
+initGiftParentBtn();
+
 /* ─── DON ────────────────────────────────────────────────── */
 const DON_PHONE     = '+2250748926625';
 const DON_PHONE_CI  = '0748926625'; // sans indicatif, pour USSD Orange
@@ -5961,6 +6294,49 @@ function _donExecCopy(text, hint, msg, reset) {
 
 <!-- Indicateur de verrouillage flottant (visible sur tous les écrans quand verrouillé) -->
 <div id="lock-floating" title="Maintenir 3s pour déverrouiller">🔒</div>
+
+<!-- ===== OVERLAY CADEAU — ENFANT ===== -->
+<div id="gift-overlay">
+  <div class="gift-box-anim">🎁</div>
+  <div class="gift-title">Bravo ! Tu as gagné un cadeau !</div>
+  <div class="gift-subtitle">Donne le téléphone à<br>papa ou maman 👨‍👩‍👧</div>
+  <button class="gift-parent-btn" id="gift-parent-btn">
+    Je suis papa / maman 🔓
+    <span class="gift-hold-bar" id="gift-hold-bar"></span>
+  </button>
+</div>
+
+<!-- ===== OVERLAY RÉVÉLATION — PARENT ===== -->
+<div id="gift-reveal-overlay">
+  <div class="gift-reveal-emoji" id="gift-reveal-emoji">🎁</div>
+  <div class="gift-reveal-label" id="gift-reveal-label">Un biscuit !</div>
+  <div class="gift-reveal-for">Pour Chérina 🌟</div>
+  <button class="gift-close-btn" onclick="closeGiftReveal()">C'est noté ! ✅</button>
+</div>
+
+<!-- ===== OVERLAY PARAMÈTRES ===== -->
+<div id="settings-overlay">
+  <div class="settings-panel">
+    <button class="settings-close-btn" onclick="closeSettings()">✕</button>
+    <h2>⚙️ Paramètres cadeaux</h2>
+    <div class="settings-section">
+      <h3>Progression actuelle</h3>
+      <div class="settings-progress">
+        <div class="settings-progress-val" id="sett-progress-val">0</div>
+        <div class="settings-progress-lbl">réussites depuis le dernier cadeau</div>
+        <button class="settings-reset-btn" onclick="resetGiftProgress()">Remettre à zéro</button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h3>Cadeau toutes les … réussites</h3>
+      <div class="freq-grid" id="sett-freq-grid"></div>
+    </div>
+    <div class="settings-section">
+      <h3>Types de cadeaux</h3>
+      <div class="gift-toggle-list" id="sett-gift-list"></div>
+    </div>
+  </div>
+</div>
 
 <!-- inputs file cachés pour photos -->
 <input type="file" id="al-file-cam"     accept="image/*" capture="environment" style="display:none">
