@@ -5822,26 +5822,33 @@ function donCopy(type) {
 
 function donOpenWave() {
   const hint = document.getElementById('don-wave-hint');
-  const phone = encodeURIComponent(DON_PHONE);
   const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
+  // Copier le numéro automatiquement — l'utilisateur peut le coller dans Wave
+  donCopyNum(null);
+
   if (isIOS) {
-    // iOS : universal link Wave → ouvre l'app si installée, sinon App Store
-    window.location.href = `https://pay.wave.com/send/?phone=${phone}&amount=${DON_AMOUNT}`;
-    setTimeout(() => {
-      window.location.href = 'https://apps.apple.com/sn/app/wave-mobile-money/id1523884528';
-    }, 1800);
+    window.open('https://apps.apple.com/sn/app/wave-mobile-money/id1523884528', '_blank');
   } else {
-    // Android : Intent URL → cible directement le package Wave
-    // S.browser_fallback_url = Play Store si l'app est absente
-    const fallback = encodeURIComponent('https://play.google.com/store/apps/details?id=com.wave.personal');
-    window.location.href =
-      `intent://send?phone=${phone}&amount=${DON_AMOUNT}` +
-      `#Intent;scheme=wave;package=com.wave.personal;` +
-      `S.browser_fallback_url=${fallback};end`;
+    // Android : cibler l'activité principale de Wave via MAIN+LAUNCHER
+    // → fonctionne même si Wave ne déclare aucun URL scheme
+    const store = encodeURIComponent('https://play.google.com/store/apps/details?id=com.wave.personal');
+    const a = document.createElement('a');
+    a.href = 'intent://open#Intent'
+           + ';action=android.intent.action.MAIN'
+           + ';category=android.intent.category.LAUNCHER'
+           + ';package=com.wave.personal'
+           + ';S.browser_fallback_url=' + store
+           + ';end';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => a.remove(), 300);
   }
 
-  if (hint) { hint.textContent = '✅ Ouverture Wave…'; setTimeout(() => { hint.textContent = 'Toucher pour ouvrir Wave'; }, 3000); }
+  if (hint) {
+    hint.textContent = '📋 Numéro copié — collez-le dans Wave > Envoyer';
+    setTimeout(() => { hint.textContent = 'Toucher pour ouvrir Wave'; }, 4000);
+  }
 }
 
 function donOpenOrange() {
