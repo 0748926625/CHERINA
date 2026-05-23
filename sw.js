@@ -1,11 +1,12 @@
-const CACHE = 'cherina-v4';
+const CACHE = 'cherina-v5';
 
 const ASSETS = [
   './index.html',
   './manifest.json',
   './pop.mp3',
   './les_couleurs_et_les_animaux.mp3.mpeg',
-  './ch%C3%A9rina.png',
+  './icon-192.png',
+  './icon-512.png',
   './ANIMAUX/CHAT.png',
   './ANIMAUX/chien.png',
   './ANIMAUX/POULET.png',
