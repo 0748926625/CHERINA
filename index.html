@@ -5822,15 +5822,8 @@ function donCopy(type) {
 
 function donOpenWave() {
   const hint = document.getElementById('don-wave-hint');
-  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  // Copier "500" dans le presse-papier — l'utilisateur peut le coller dans le champ montant
-  _donCopyText(DON_AMOUNT, hint, '✅ Montant 500 copié — collez dans Wave !');
-
-  const hint = document.getElementById('don-wave-hint');
-
-  // Étape 1 — télécharger le contact vCard (.vcf)
-  // Android propose automatiquement d'ajouter le contact au répertoire
+  // Étape 1 — télécharger le vCard pour enregistrer le contact dans le répertoire
   const vcard = [
     'BEGIN:VCARD',
     'VERSION:3.0',
@@ -5848,16 +5841,8 @@ function donOpenWave() {
   dlA.click();
   setTimeout(() => { dlA.remove(); URL.revokeObjectURL(vcfUrl); }, 600);
 
-  // Étape 2 — ouvrir Wave après un court délai
-  // (App Link HTTPS : si Wave a vérifié pay.wave.com, s'ouvre sans Play Store)
-  setTimeout(() => {
-    const wA = document.createElement('a');
-    wA.href = 'https://pay.wave.com/';
-    wA.target = '_blank';
-    document.body.appendChild(wA);
-    wA.click();
-    setTimeout(() => wA.remove(), 200);
-  }, 900);
+  // Étape 2 — ouvrir Wave (dans le contexte du geste utilisateur)
+  window.open('https://pay.wave.com/', '_blank');
 
   if (hint) {
     hint.textContent = '📱 Contact enregistré → Wave s\'ouvre…';
