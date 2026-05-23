@@ -1,4 +1,4 @@
-const CACHE = 'cherina-v6';
+const CACHE = 'cherina-v7';
 
 const ASSETS = [
   './index.html',
@@ -42,6 +42,8 @@ self.addEventListener('fetch', e => {
     caches.match(e.request).then(cached => {
       if (cached) return cached;
       return fetch(e.request).catch(() => {
+        // Images ANIMAUX : retourner une erreur pour que onerror JS charge Twemoji
+        if (e.request.url.includes('/ANIMAUX/')) return Response.error();
         if (e.request.destination === 'image') {
           const px = Uint8Array.from(
             atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='),

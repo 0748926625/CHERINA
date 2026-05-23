@@ -156,9 +156,9 @@ body {
   justify-content: flex-start;
   align-items: center;
   overflow: hidden;
-  padding-top: max(env(safe-area-inset-top, 0px), 8px);
-  padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
-  gap: clamp(3px, 0.8vh, 8px);
+  padding-top: max(env(safe-area-inset-top, 0px), 10px);
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 10px);
+  gap: clamp(4px, 1.2vh, 10px);
 }
 
 .home-bg-balloons {
@@ -181,19 +181,19 @@ body {
 }
 
 .home-logo {
-  font-size: clamp(1.5rem, 6vw, 2.6rem);
-  margin-top: clamp(2px, 0.5vh, 8px);
+  font-size: clamp(1.8rem, 8vw, 3.5rem);
+  margin-top: clamp(4px, 1vh, 12px);
   animation: logoBounce 2s ease-in-out infinite;
   flex-shrink: 0;
 }
 
 @keyframes logoBounce {
   0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-8px); }
+  50%       { transform: translateY(-10px); }
 }
 
 .home-title {
-  font-size: clamp(1rem, 4.5vw, 1.8rem);
+  font-size: clamp(1.1rem, 5.5vw, 2.2rem);
   font-weight: 900;
   color: #fff;
   text-shadow: 2px 3px 0 rgba(0,0,0,0.25);
@@ -204,7 +204,7 @@ body {
 
 .home-sub {
   color: rgba(255,255,255,0.8);
-  font-size: clamp(0.68rem, 2.4vw, 0.92rem);
+  font-size: clamp(0.72rem, 2.8vw, 1rem);
   text-align: center;
   flex-shrink: 0;
 }
@@ -886,23 +886,23 @@ body.game-locked .tab-bar     { pointer-events: none !important; opacity: 0.6; }
 
 /* ===== ÉLÉMENTS EN MODE DÉFI — taille réduite pour tenir à 3 sur petit écran ===== */
 .in-challenge .balloon-body {
-  width: clamp(98px, 27vw, 136px);
-  height: clamp(120px, 33vw, 168px);
+  width: clamp(108px, 30vw, 148px);
+  height: clamp(132px, 36vw, 182px);
 }
-.in-challenge .balloon-string { height: clamp(26px, 6vw, 42px); }
-.in-challenge .balloon-knot   { width: clamp(9px, 2.5vw, 13px); height: clamp(9px, 2.5vw, 13px); }
+.in-challenge .balloon-string { height: clamp(28px, 7vw, 46px); }
+.in-challenge .balloon-knot   { width: clamp(10px, 2.8vw, 14px); height: clamp(10px, 2.8vw, 14px); }
 
 .in-challenge.animal-card-wrap .animal-card {
-  width: clamp(118px, 32vw, 162px);
-  height: clamp(132px, 35vw, 182px);
+  width: clamp(130px, 38vw, 180px);
+  height: clamp(146px, 42vw, 202px);
   border-width: 4px;
   gap: 5px;
 }
 .in-challenge.animal-card-wrap .animal-emoji {
-  width: clamp(86px, 23vw, 124px);
-  height: clamp(86px, 23vw, 124px);
+  width: clamp(96px, 27vw, 140px);
+  height: clamp(96px, 27vw, 140px);
 }
-.in-challenge.animal-card-wrap .animal-label-card { font-size: clamp(0.72rem, 2.6vw, 0.92rem); }
+.in-challenge.animal-card-wrap .animal-label-card { font-size: clamp(0.78rem, 2.8vw, 0.98rem); }
 
 .in-challenge.num-card-wrap,
 .in-challenge .num-card {
@@ -1567,19 +1567,7 @@ body.game-locked .tab-bar     { pointer-events: none !important; opacity: 0.6; }
 @media (max-width: 360px) {
   .tab-icon { font-size: 1.1rem; }
   .tab-lbl  { font-size: 0.58rem; }
-  .card-desc { font-size: 0.65rem; }
-  .home-logo { font-size: 1.4rem; }
-  .home-title { font-size: 0.92rem; }
   .piano-key { width: 50px; }
-}
-
-/* Écrans courts — portrait (ex: iPhone SE 667px) */
-@media (max-height: 680px) {
-  .home-logo { font-size: 1.4rem; margin-top: 2px; }
-  .home-sub { display: none; }
-  .card { padding: 8px 12px; }
-  .card-desc { display: none; }
-  .cards-wrap { gap: 5px; }
 }
 
 /* Paysage ou très courts (< 520px) */
@@ -3740,8 +3728,8 @@ function newRound3() {
 
   speak(`Touche le ballon ${target.label} !`, 0.75, 1.22);
 
-  const iW = Math.round(Math.min(gw() * 0.27, 136));
-  const iH = Math.round(iW * 1.22 + 46);
+  const iW = Math.round(Math.min(gw() * 0.30, 148));
+  const iH = Math.round(iW * 1.22 + 50);
   const positions = challengeSpread(iW, iH);
   sample.forEach((color, i) => {
     const wrap = buildBalloon(color, true);
@@ -4015,7 +4003,7 @@ function newAnimalChallenge() {
 
   speak(`Touche ${target.art}${target.label} !`, 0.75, 1.22);
 
-  const iW = Math.round(Math.min(gw() * 0.32, 162));
+  const iW = Math.round(Math.min(gw() * 0.38, 180));
   const iH = Math.round(iW * 1.1);
   const positions = challengeSpread(iW, iH);
   sample.forEach((animal, i) => {
