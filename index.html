@@ -2101,6 +2101,66 @@ body.game-locked .tab-btn[data-tab="album"] { pointer-events: none; opacity: .5;
 /* ── Toast ── */
 .al-toast { position:fixed; bottom:104px; left:50%; transform:translateX(-50%); background:rgba(44,24,16,.9); color:#fff; padding:12px 20px; border-radius:50px; font-family:system-ui,sans-serif; font-size:15px; z-index:1000; animation:alFadeIn .2s ease; box-shadow:0 4px 14px rgba(0,0,0,.28); white-space:nowrap; }
 
+/* ═══════ AIDE ═══════ */
+#btn-help-home {
+  position: absolute;
+  top: calc(max(env(safe-area-inset-top,0px),10px) + clamp(50px,13vw,62px) + 10px);
+  left: clamp(12px,3.5vw,20px);
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border: none; border-radius: 50%;
+  width: clamp(38px,10vw,46px); height: clamp(38px,10vw,46px);
+  font-size: clamp(1rem,3.8vw,1.25rem);
+  cursor: pointer; display: grid; place-items: center;
+  z-index: 20; box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  transition: transform .12s, background .2s;
+}
+#btn-help-home:active { transform: scale(0.88); }
+
+#help-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1900;
+  background: rgba(0,0,0,0.72);
+  align-items: center; justify-content: center; padding: 16px;
+}
+#help-overlay.show { display: flex; }
+.help-panel {
+  background: linear-gradient(160deg,#0f172a,#1e3a5f);
+  border-radius: 28px; padding: 24px 18px 28px;
+  width: min(96vw,440px); max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.55); position: relative; color: #fff;
+  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;
+}
+.help-panel h2 {
+  font-size: clamp(1.15rem,5vw,1.4rem); font-weight: 900;
+  text-align: center; margin: 0 0 18px; color: #FFD60A;
+  padding-right: 30px;
+}
+.help-close-btn {
+  position: absolute; top: 14px; right: 14px;
+  background: rgba(255,255,255,0.15); border: none; border-radius: 50%;
+  width: 36px; height: 36px; font-size: 1rem; cursor: pointer;
+  color: #fff; display: grid; place-items: center;
+}
+.help-card {
+  background: rgba(255,255,255,0.07); border-radius: 16px;
+  padding: 13px 15px; margin-bottom: 10px; border-left: 4px solid;
+}
+.help-card-hdr { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.help-card-icon { font-size: 1.5rem; flex-shrink: 0; }
+.help-card-title { font-size: clamp(0.92rem,3.6vw,1rem); font-weight: 900; }
+.help-card-body {
+  font-size: clamp(0.76rem,2.9vw,0.86rem);
+  color: rgba(255,255,255,0.78); line-height: 1.65;
+}
+.help-card-body ul { padding-left: 14px; margin: 4px 0 0; }
+.help-card-body li { margin-bottom: 2px; }
+.help-tip {
+  margin-top: 14px; background: rgba(255,200,0,0.12);
+  border-radius: 12px; padding: 10px 14px;
+  font-size: clamp(0.74rem,2.8vw,0.83rem); color: rgba(255,220,100,0.9);
+  line-height: 1.6;
+}
+
 /* ═══════ SYSTÈME CADEAUX & PARAMÈTRES ═══════ */
 #btn-settings-home {
   position: absolute;
@@ -2296,6 +2356,7 @@ body.game-locked .tab-btn[data-tab="album"] { pointer-events: none; opacity: .5;
   <button class="btn-mute-global" id="btn-mute-global" onclick="toggleGlobalMusic()" title="Couper / relancer la musique">🔊</button>
   <button class="btn-lock-home" id="btn-lock-home" onclick="quickLock()" title="Verrouiller le jeu">🔓</button>
   <button id="btn-settings-home" title="Paramètres cadeaux (maintenir)">⚙️</button>
+  <button id="btn-help-home" onclick="openHelp()" title="Aide">❓</button>
 
   <div class="home-logo">🎈</div>
   <h1 class="home-title">Chérina apprend !</h1>
@@ -3100,6 +3161,13 @@ function confirmUnlock() {
 }
 function cancelUnlock() {
   document.getElementById('unlock-overlay').classList.remove('show');
+}
+
+function openHelp() {
+  document.getElementById('help-overlay').classList.add('show');
+}
+function closeHelp() {
+  document.getElementById('help-overlay').classList.remove('show');
 }
 
 // Attacher les événements sur l'indicateur flottant après chargement
@@ -6343,6 +6411,109 @@ function _donExecCopy(text, hint, msg, reset) {
     <div class="unlock-btns">
       <button class="unlock-yes" onclick="confirmUnlock()">✓ Oui</button>
       <button class="unlock-no"  onclick="cancelUnlock()">✕ Non</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== OVERLAY AIDE ===== -->
+<div id="help-overlay">
+  <div class="help-panel">
+    <button class="help-close-btn" onclick="closeHelp()">✕</button>
+    <h2>Comment jouer ? 🎓</h2>
+
+    <div class="help-card" style="border-color:#FF6B6B">
+      <div class="help-card-hdr">
+        <span class="help-card-icon">🎨</span>
+        <span class="help-card-title">Couleurs</span>
+      </div>
+      <div class="help-card-body">
+        <ul>
+          <li><b>Niveau 1 — Primaires :</b> trois ballons colorés s'affichent. Touche-les pour entendre leur couleur.</li>
+          <li><b>Niveau 2 — Toutes couleurs :</b> sept couleurs à découvrir en touchant les ballons.</li>
+          <li><b>Niveau 3 — Défi :</b> la voix demande une couleur. Touche le bon ballon !</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="help-card" style="border-color:#4FC3F7">
+      <div class="help-card-hdr">
+        <span class="help-card-icon">🔢</span>
+        <span class="help-card-title">Chiffres</span>
+      </div>
+      <div class="help-card-body">
+        <ul>
+          <li><b>Niveaux 1-3 :</b> des ballons apparaissent, on les compte ensemble, puis il faut choisir le bon chiffre.</li>
+          <li>Plus le niveau est élevé, plus il y a de ballons à compter.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="help-card" style="border-color:#A5D6A7">
+      <div class="help-card-hdr">
+        <span class="help-card-icon">🦁</span>
+        <span class="help-card-title">Zoo</span>
+      </div>
+      <div class="help-card-body">
+        <ul>
+          <li><b>Zoo 1 — Découverte :</b> touche un animal pour entendre son nom et son cri.</li>
+          <li><b>Zoo 2 — Défi :</b> la voix demande un animal. Retrouve-le parmi plusieurs !</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="help-card" style="border-color:#FFD60A">
+      <div class="help-card-hdr">
+        <span class="help-card-icon">🎹</span>
+        <span class="help-card-title">Piano</span>
+      </div>
+      <div class="help-card-body">
+        <ul>
+          <li><b>Détruire les chiffres :</b> des chiffres tombent du ciel. Tape sur la touche du piano correspondante pour les détruire.</li>
+          <li><b>Jeu du chat :</b> un chat se promène sur le piano. Touche les bonnes touches pour jouer des notes.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="help-card" style="border-color:#CE93D8">
+      <div class="help-card-hdr">
+        <span class="help-card-icon">🔷</span>
+        <span class="help-card-title">Formes & Association</span>
+      </div>
+      <div class="help-card-body">
+        <ul>
+          <li><b>Formes :</b> touche les formes pour entendre leur nom (cercle, carré, triangle…).</li>
+          <li><b>Association :</b> relie chaque image à son image jumelle en les touchant dans le bon ordre.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="help-card" style="border-color:#FFAB40">
+      <div class="help-card-hdr">
+        <span class="help-card-icon">🧍</span>
+        <span class="help-card-title">Corps humain</span>
+      </div>
+      <div class="help-card-body">
+        <ul>
+          <li>Un personnage s'affiche. Touche une partie du corps pour entendre son nom.</li>
+          <li>La partie touchée se met en évidence et la voix la prononce.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="help-card" style="border-color:#80DEEA">
+      <div class="help-card-hdr">
+        <span class="help-card-icon">👨‍👩‍👧</span>
+        <span class="help-card-title">Famille</span>
+      </div>
+      <div class="help-card-body">
+        <ul>
+          <li>L'album de famille de Chérina. Touche une photo pour entendre le prénom.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="help-tip">
+      💡 <b>Astuce :</b> les cadeaux s'accumulent au fil des parties. Quand Chérina en gagne un, donne le téléphone à papa ou maman pour le révéler !
     </div>
   </div>
 </div>
