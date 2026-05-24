@@ -4173,17 +4173,15 @@ function startGame(lvl) {
     speak('Chérina, comptons les ballons !', 0.8, 1.2);
     setTimeout(newCountingRound, 700);
   } else if (lvl === 7) {
-    speak('Chérina, saurais-tu reconnaître certains animaux ?', 0.8, 1.2);
-    setTimeout(() => {
-      speak('Touche un animal pour découvrir son nom et son cri !', 0.8, 1.2);
-      setTimeout(newAnimalDiscover, 700);
-    }, 2500);
+    speakSeq([
+      { text: 'Chérina, saurais-tu reconnaître certains animaux ?', rate: 0.8, pitch: 1.2 },
+      { text: 'Touche un animal pour découvrir son nom et son cri !', rate: 0.8, pitch: 1.2 },
+    ], () => setTimeout(newAnimalDiscover, 500));
   } else if (lvl === 8) {
-    speak('Chérina, saurais-tu reconnaître certains animaux ?', 0.8, 1.2);
-    setTimeout(() => {
-      speak('Trouve le bon animal que je te demande !', 0.8, 1.2);
-      setTimeout(newAnimalChallenge, 700);
-    }, 2500);
+    speakSeq([
+      { text: 'Chérina, saurais-tu reconnaître certains animaux ?', rate: 0.8, pitch: 1.2 },
+      { text: 'Trouve le bon animal que je te demande !', rate: 0.8, pitch: 1.2 },
+    ], () => setTimeout(newAnimalChallenge, 500));
   }
 }
 
