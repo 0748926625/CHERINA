@@ -776,11 +776,34 @@ body {
 }
 #lock-floating.visible { opacity: 1; pointer-events: auto; }
 
-@keyframes lockHoldPulse {
-  0%   { box-shadow: 0 0 0 0   rgba(255,200,0,0.7); }
-  100% { box-shadow: 0 0 0 18px rgba(255,200,0,0); background: rgba(80,200,80,0.6); }
+/* Overlay déverrouillage */
+#unlock-overlay {
+  display: none; position: fixed; inset: 0; z-index: 10000;
+  background: rgba(0,0,0,0.65);
+  align-items: center; justify-content: center;
 }
-#lock-floating.holding { animation: lockHoldPulse 3s linear forwards; }
+#unlock-overlay.show { display: flex; }
+.unlock-box {
+  background: linear-gradient(160deg,#1e1040,#2d1b69);
+  border-radius: 28px; padding: 32px 28px 28px;
+  text-align: center; color: #fff;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+  width: min(88vw, 320px);
+}
+.unlock-icon { font-size: 3rem; }
+.unlock-msg  { font-size: clamp(1rem,4.5vw,1.2rem); font-weight: 700; line-height: 1.5; }
+.unlock-btns { display: flex; gap: 12px; width: 100%; }
+.unlock-yes  {
+  flex: 1; background: linear-gradient(135deg,#30D158,#059669);
+  border: none; border-radius: 16px; padding: 14px;
+  color: #fff; font-size: 1.1rem; font-weight: 800; cursor: pointer;
+}
+.unlock-no   {
+  flex: 1; background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 14px;
+  color: #fff; font-size: 1.1rem; font-weight: 800; cursor: pointer;
+}
 
 /* Quand verrouillé : masquer la navigation */
 body.game-locked .btn-home,
@@ -1616,10 +1639,18 @@ body.game-locked .tab-bar     { pointer-events: none !important; opacity: 0.6; }
   pointer-events: none;
   opacity: 0;
 }
-#pwa-install-banner.show {
+/* Visible seulement sur l'écran d'accueil */
+#home.active ~ #pwa-install-banner.show {
   transform: translateX(-50%) translateY(0);
   pointer-events: auto;
   opacity: 1;
+}
+/* Masquer quand un overlay de jeu est actif */
+body:has(#body-game-overlay.active) #pwa-install-banner.show,
+body:has(#cat-game-overlay.active)  #pwa-install-banner.show {
+  transform: translateX(-50%) translateY(120px) !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
 }
 #pwa-install-banner:active {
   transform: translateX(-50%) translateY(4px);
@@ -2117,22 +2148,6 @@ body.game-locked .tab-btn[data-tab="album"] { pointer-events: none; opacity: .5;
   font-size: clamp(1rem,4.5vw,1.4rem);
   color: rgba(255,255,255,0.9); text-align: center; line-height: 1.6;
 }
-.gift-parent-btn {
-  margin-top: 12px;
-  background: linear-gradient(135deg,#7C3AED,#4F46E5); color: #fff;
-  border: none; border-radius: 50px; padding: 16px 32px;
-  font-size: clamp(1rem,4vw,1.2rem); font-weight: 800; cursor: pointer;
-  box-shadow: 0 6px 0 rgba(0,0,0,0.3), 0 10px 28px rgba(79,70,229,0.4);
-  position: relative; overflow: hidden;
-  touch-action: none; user-select: none; -webkit-user-select: none;
-}
-.gift-hold-bar {
-  position: absolute; left: 0; bottom: 0; height: 5px;
-  background: rgba(255,255,255,0.65); width: 0%;
-  border-radius: 0 0 50px 50px;
-  transition: none;
-}
-.gift-parent-btn.holding .gift-hold-bar { width: 100%; transition: width 1.9s linear; }
 
 /* Overlay révélation parent */
 #gift-reveal-overlay {
@@ -2201,17 +2216,50 @@ body.game-locked .tab-btn[data-tab="album"] { pointer-events: none; opacity: .5;
   background: linear-gradient(135deg,#7C3AED,#4F46E5); border-color: #7C3AED;
   box-shadow: 0 4px 14px rgba(124,58,237,0.4);
 }
-.gift-toggle-list { display: flex; flex-direction: column; gap: 8px; }
-.gift-toggle-row {
+/* Liste des étapes cadeaux */
+.gift-step-row {
   display: flex; align-items: center; gap: 12px;
   background: rgba(255,255,255,0.07); border-radius: 14px;
-  padding: 11px 14px; cursor: pointer; transition: background .15s;
-  border: 2px solid transparent;
+  padding: 12px 14px; margin-bottom: 8px;
 }
-.gift-toggle-row.active { background: rgba(124,58,237,0.25); border-color: rgba(124,58,237,0.5); }
-.gift-toggle-emoji { font-size: 1.5rem; }
-.gift-toggle-label { flex: 1; font-size: clamp(0.9rem,3.5vw,1rem); font-weight: 700; }
-.gift-toggle-check { font-size: 1.1rem; }
+.gift-step-emoji { font-size: 1.6rem; flex-shrink: 0; }
+.gift-step-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.gift-step-label { font-size: clamp(0.88rem,3.5vw,0.98rem); font-weight: 700; color: #fff; }
+.gift-step-at { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+.gift-step-del {
+  background: rgba(255,80,80,0.2); border: none; border-radius: 8px;
+  padding: 6px 10px; cursor: pointer; font-size: 1rem; flex-shrink: 0;
+}
+.gift-steps-empty { color: rgba(255,255,255,0.45); text-align: center; font-size: 0.9rem; padding: 10px 0; }
+/* Formulaire ajout cadeau */
+.gift-add-form { display: flex; flex-direction: column; gap: 10px; }
+.gift-add-row1 { display: flex; gap: 8px; }
+.gift-add-row2 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.gift-input-emoji {
+  width: 58px; text-align: center;
+  background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 12px; color: #fff; padding: 10px 6px; font-size: 1.4rem;
+  outline: none;
+}
+.gift-input-label {
+  flex: 1; background: rgba(255,255,255,0.12);
+  border: 2px solid rgba(255,255,255,0.2); border-radius: 12px;
+  color: #fff; padding: 10px 14px; font-size: 0.95rem; outline: none;
+}
+.gift-add-after, .gift-add-unit { color: rgba(255,255,255,0.65); font-size: 0.88rem; white-space: nowrap; }
+.gift-input-num {
+  width: 68px; text-align: center;
+  background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 12px; color: #fff; padding: 10px 6px; font-size: 0.95rem; outline: none;
+}
+.gift-add-btn {
+  background: linear-gradient(135deg,#7C3AED,#4F46E5); color: #fff;
+  border: none; border-radius: 12px; padding: 10px 18px;
+  font-size: 0.92rem; font-weight: 800; cursor: pointer; white-space: nowrap; margin-left: auto;
+}
+.gift-input-emoji::placeholder,.gift-input-label::placeholder,.gift-input-num::placeholder {
+  color: rgba(255,255,255,0.3);
+}
 .settings-progress {
   background: rgba(255,255,255,0.08); border-radius: 14px;
   padding: 14px; text-align: center;
@@ -2709,14 +2757,14 @@ body.game-locked .tab-btn[data-tab="album"] { pointer-events: none; opacity: .5;
         <!-- Bouche -->
         <g id="bg-mouth-g">
           <g id="bg-mouth-closed">
-            <path d="M78,105 Q100,120 122,105" fill="none" stroke="#7A2E10" stroke-width="3" stroke-linecap="round"/>
-            <path d="M78,105 Q100,120 122,105 Q112,100 100,101 Q88,100 78,105Z" fill="#C04030"/>
+            <path d="M78,105 Q100,120 122,105 Q112,100 100,101 Q88,100 78,105Z" fill="#C04030" stroke="#000000" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M78,105 Q100,120 122,105" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
             <ellipse cx="100" cy="114" rx="14" ry="4.5" fill="rgba(220,90,50,0.32)"/>
             <circle cx="74"  cy="107" r="3.5" fill="rgba(150,55,20,0.2)"/>
             <circle cx="126" cy="107" r="3.5" fill="rgba(150,55,20,0.2)"/>
           </g>
           <g id="bg-mouth-open">
-            <path d="M78,104 Q100,120 122,104 Q122,104 122,121 Q100,126 78,121 Z" fill="#7A2E10"/>
+            <path d="M78,104 Q100,120 122,104 Q122,104 122,121 Q100,126 78,121 Z" fill="#7A2E10" stroke="#000000" stroke-width="1.5" stroke-linejoin="round"/>
             <ellipse cx="100" cy="114" rx="19" ry="11" fill="#150606"/>
             <rect x="83"  y="104" width="34" height="9"  rx="4.5" fill="#F5F1EB"/>
             <rect x="85"  y="116" width="30" height="8"  rx="4"   fill="#EDE9DF"/>
@@ -3018,7 +3066,6 @@ let musicMuted = false;
 
 // ── Verrouillage parental ──────────────────────────────────
 let gameLocked    = false;
-let unlockTimer   = null;
 
 function quickLock() {
   if (gameLocked) return;
@@ -3037,36 +3084,27 @@ function updateLockState() {
   if (indicator) indicator.classList.toggle('visible', gameLocked);
 }
 
-function startUnlockHold(e) {
+function showUnlockModal(e) {
   if (!gameLocked) return;
   e.preventDefault();
-  const indicator = document.getElementById('lock-floating');
-  if (indicator) indicator.classList.add('holding');
-  unlockTimer = setTimeout(() => {
-    gameLocked = false;
-    updateLockState();
-    const ind = document.getElementById('lock-floating');
-    if (ind) ind.classList.remove('holding');
-  }, 3000);
+  e.stopPropagation();
+  document.getElementById('unlock-overlay').classList.add('show');
 }
-
-function cancelUnlockHold() {
-  clearTimeout(unlockTimer);
-  unlockTimer = null;
-  const indicator = document.getElementById('lock-floating');
-  if (indicator) indicator.classList.remove('holding');
+function confirmUnlock() {
+  gameLocked = false;
+  updateLockState();
+  document.getElementById('unlock-overlay').classList.remove('show');
+}
+function cancelUnlock() {
+  document.getElementById('unlock-overlay').classList.remove('show');
 }
 
 // Attacher les événements sur l'indicateur flottant après chargement
 window.addEventListener('DOMContentLoaded', () => {
   const ind = document.getElementById('lock-floating');
   if (!ind) return;
-  ind.addEventListener('touchstart',  startUnlockHold,  { passive: false });
-  ind.addEventListener('mousedown',   startUnlockHold);
-  ind.addEventListener('touchend',    cancelUnlockHold);
-  ind.addEventListener('touchcancel', cancelUnlockHold);
-  ind.addEventListener('mouseup',     cancelUnlockHold);
-  ind.addEventListener('mouseleave',  cancelUnlockHold);
+  ind.addEventListener('touchstart', showUnlockModal, { passive: false });
+  ind.addEventListener('click',      showUnlockModal);
 });
 // ─────────────────────────────────────────────────────────────
 
@@ -6068,24 +6106,19 @@ function triggerPwaInstall() {
 /* ═══════════════════════════════════════════════════════════
    SYSTÈME CADEAUX & PARAMÈTRES
 ═══════════════════════════════════════════════════════════ */
-const GIFT_CATALOG = [
-  { id:'biscuit',  emoji:'🍪', label:'Un biscuit'        },
-  { id:'chocolat', emoji:'🍫', label:'Du chocolat'       },
-  { id:'bisou',    emoji:'😘', label:'Un gros bisou'     },
-  { id:'calin',    emoji:'🤗', label:'Un câlin'          },
-  { id:'bonbon',   emoji:'🍭', label:'Un bonbon'         },
-  { id:'histoire', emoji:'📖', label:'Une histoire'      },
-  { id:'chanson',  emoji:'🎵', label:'Une chanson'       },
-  { id:'sortie',   emoji:'🌳', label:'Une sortie dehors' },
-];
-const GIFT_FREQ_OPTIONS = [3, 5, 10, 15];
-
-let giftCfg      = { frequency: 5, active: ['biscuit','chocolat','bisou','calin'] };
+let giftCfg = {
+  steps: [
+    { emoji:'😘', label:'Un gros bisou',      at:15 },
+    { emoji:'🍪', label:'Un biscuit',          at:30 },
+    { emoji:'🌳', label:'Une petite ballade',  at:45 },
+  ]
+};
 let giftProgress = 0;
+let _pendingGift  = null;
 
 function loadGiftCfg() {
   try {
-    const s = localStorage.getItem('cherina_gift_cfg');
+    const s = localStorage.getItem('cherina_gift_cfg2');
     if (s) giftCfg = JSON.parse(s);
     const p = localStorage.getItem('cherina_gift_progress');
     if (p !== null) giftProgress = parseInt(p) || 0;
@@ -6093,19 +6126,22 @@ function loadGiftCfg() {
 }
 function saveGiftCfg() {
   try {
-    localStorage.setItem('cherina_gift_cfg', JSON.stringify(giftCfg));
+    localStorage.setItem('cherina_gift_cfg2', JSON.stringify(giftCfg));
     localStorage.setItem('cherina_gift_progress', String(giftProgress));
   } catch(e) {}
 }
 
 function checkGiftTrigger() {
-  if (!giftCfg.frequency || !giftCfg.active.length) return;
+  if (!giftCfg.steps.length) return;
   giftProgress++;
   saveGiftCfg();
-  if (giftProgress >= giftCfg.frequency) {
-    giftProgress = 0;
-    saveGiftCfg();
+  const sorted = [...giftCfg.steps].sort((a, b) => a.at - b.at);
+  const hit = sorted.find(s => s.at === giftProgress);
+  if (hit) {
+    _pendingGift = hit;
     setTimeout(showGiftEarned, 1200);
+    const maxAt = sorted[sorted.length - 1].at;
+    if (giftProgress >= maxAt) { giftProgress = 0; saveGiftCfg(); }
   }
 }
 
@@ -6117,31 +6153,9 @@ function showGiftEarned() {
   document.getElementById('gift-overlay').classList.add('show');
 }
 
-/* Bouton "Je suis papa/maman" — maintenir 1.9s */
-let _giftHoldTimer = null;
-function initGiftParentBtn() {
-  const btn = document.getElementById('gift-parent-btn');
-  if (!btn) return;
-  const start = () => {
-    btn.classList.add('holding');
-    _giftHoldTimer = setTimeout(() => {
-      btn.classList.remove('holding');
-      document.getElementById('gift-overlay').classList.remove('show');
-      revealGift();
-    }, 1950);
-  };
-  const cancel = () => { btn.classList.remove('holding'); clearTimeout(_giftHoldTimer); };
-  btn.addEventListener('mousedown',   start);
-  btn.addEventListener('touchstart',  e => { e.preventDefault(); start(); }, { passive:false });
-  btn.addEventListener('mouseup',     cancel);
-  btn.addEventListener('mouseleave',  cancel);
-  btn.addEventListener('touchend',    cancel);
-  btn.addEventListener('touchcancel', cancel);
-}
-
 function revealGift() {
-  const pool = GIFT_CATALOG.filter(g => giftCfg.active.includes(g.id));
-  const gift = pool.length ? pick(pool) : GIFT_CATALOG[0];
+  document.getElementById('gift-overlay').classList.remove('show');
+  const gift = _pendingGift || giftCfg.steps[0] || { emoji:'🎁', label:'Surprise' };
   document.getElementById('gift-reveal-emoji').textContent = gift.emoji;
   document.getElementById('gift-reveal-label').textContent = gift.label + ' !';
   confettiRain();
@@ -6177,36 +6191,58 @@ function openSettings() {
 function closeSettings() {
   document.getElementById('settings-overlay').classList.remove('show');
 }
+
 function renderSettingsPanel() {
+  const sorted = [...giftCfg.steps].sort((a, b) => a.at - b.at);
+  const maxAt  = sorted.length ? sorted[sorted.length - 1].at : '–';
   document.getElementById('sett-progress-val').textContent = giftProgress;
-  // Fréquence
-  const fg = document.getElementById('sett-freq-grid');
-  fg.innerHTML = '';
-  GIFT_FREQ_OPTIONS.forEach(n => {
-    const b = document.createElement('button');
-    b.className = 'freq-btn' + (giftCfg.frequency === n ? ' active' : '');
-    b.textContent = n;
-    b.onclick = () => { giftCfg.frequency = n; saveGiftCfg(); renderSettingsPanel(); };
-    fg.appendChild(b);
-  });
-  // Types
-  const gl = document.getElementById('sett-gift-list');
-  gl.innerHTML = '';
-  GIFT_CATALOG.forEach(g => {
-    const isOn = giftCfg.active.includes(g.id);
-    const row  = document.createElement('div');
-    row.className = 'gift-toggle-row' + (isOn ? ' active' : '');
-    row.innerHTML = `<span class="gift-toggle-emoji">${g.emoji}</span>
-      <span class="gift-toggle-label">${g.label}</span>
-      <span class="gift-toggle-check">${isOn ? '✅' : '⬜'}</span>`;
-    row.onclick = () => {
-      if (isOn) { if (giftCfg.active.length > 1) giftCfg.active = giftCfg.active.filter(id => id !== g.id); }
-      else giftCfg.active.push(g.id);
-      saveGiftCfg(); renderSettingsPanel();
-    };
-    gl.appendChild(row);
+  document.getElementById('sett-progress-max').textContent = maxAt;
+
+  const list = document.getElementById('sett-steps-list');
+  list.innerHTML = '';
+  if (!giftCfg.steps.length) {
+    list.innerHTML = '<div class="gift-steps-empty">Aucun cadeau configuré</div>';
+    return;
+  }
+  sorted.forEach(step => {
+    const origIdx = giftCfg.steps.indexOf(step);
+    const row = document.createElement('div');
+    row.className = 'gift-step-row';
+    row.innerHTML = `<span class="gift-step-emoji">${step.emoji}</span>
+      <div class="gift-step-info">
+        <span class="gift-step-label">${step.label}</span>
+        <span class="gift-step-at">après ${step.at} réussites</span>
+      </div>
+      <button class="gift-step-del" onclick="deleteGiftStep(${origIdx})">🗑️</button>`;
+    list.appendChild(row);
   });
 }
+
+function addGiftStep() {
+  const emojiEl = document.getElementById('add-gift-emoji');
+  const labelEl = document.getElementById('add-gift-label');
+  const numEl   = document.getElementById('add-gift-num');
+  const emoji = (emojiEl.value || '🎁').trim();
+  const label = labelEl.value.trim();
+  const at    = parseInt(numEl.value);
+  if (!label || isNaN(at) || at < 1) return;
+  const existing = giftCfg.steps.findIndex(s => s.at === at);
+  if (existing >= 0) {
+    giftCfg.steps[existing] = { emoji, label, at };
+  } else {
+    giftCfg.steps.push({ emoji, label, at });
+  }
+  saveGiftCfg();
+  emojiEl.value = ''; labelEl.value = ''; numEl.value = '';
+  renderSettingsPanel();
+}
+
+function deleteGiftStep(idx) {
+  giftCfg.steps.splice(idx, 1);
+  saveGiftCfg();
+  renderSettingsPanel();
+}
+
 function resetGiftProgress() {
   giftProgress = 0; saveGiftCfg();
   document.getElementById('sett-progress-val').textContent = '0';
@@ -6214,7 +6250,6 @@ function resetGiftProgress() {
 
 loadGiftCfg();
 initSettingsBtn();
-initGiftParentBtn();
 
 /* ─── DON ────────────────────────────────────────────────── */
 const DON_PHONE     = '+2250748926625';
@@ -6293,17 +6328,25 @@ function _donExecCopy(text, hint, msg, reset) {
 </script>
 
 <!-- Indicateur de verrouillage flottant (visible sur tous les écrans quand verrouillé) -->
-<div id="lock-floating" title="Maintenir 3s pour déverrouiller">🔒</div>
+<div id="lock-floating" title="Toucher pour déverrouiller">🔒</div>
+
+<!-- Overlay confirmation déverrouillage -->
+<div id="unlock-overlay">
+  <div class="unlock-box">
+    <div class="unlock-icon">🔓</div>
+    <div class="unlock-msg">Déverrouiller le jeu ?</div>
+    <div class="unlock-btns">
+      <button class="unlock-yes" onclick="confirmUnlock()">✓ Oui</button>
+      <button class="unlock-no"  onclick="cancelUnlock()">✕ Non</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===== OVERLAY CADEAU — ENFANT ===== -->
-<div id="gift-overlay">
+<div id="gift-overlay" onclick="revealGift()">
   <div class="gift-box-anim">🎁</div>
   <div class="gift-title">Bravo ! Tu as gagné un cadeau !</div>
-  <div class="gift-subtitle">Donne le téléphone à<br>papa ou maman 👨‍👩‍👧</div>
-  <button class="gift-parent-btn" id="gift-parent-btn">
-    Je suis papa / maman 🔓
-    <span class="gift-hold-bar" id="gift-hold-bar"></span>
-  </button>
+  <div class="gift-subtitle">Donne le téléphone à papa ou maman<br>pour découvrir ton cadeau ! 👨‍👩‍👧</div>
 </div>
 
 <!-- ===== OVERLAY RÉVÉLATION — PARENT ===== -->
@@ -6320,20 +6363,31 @@ function _donExecCopy(text, hint, msg, reset) {
     <button class="settings-close-btn" onclick="closeSettings()">✕</button>
     <h2>⚙️ Paramètres cadeaux</h2>
     <div class="settings-section">
-      <h3>Progression actuelle</h3>
+      <h3>Progression</h3>
       <div class="settings-progress">
-        <div class="settings-progress-val" id="sett-progress-val">0</div>
-        <div class="settings-progress-lbl">réussites depuis le dernier cadeau</div>
+        <div class="settings-progress-val"><span id="sett-progress-val">0</span> <span style="font-size:1.1rem;opacity:.6">/ <span id="sett-progress-max">–</span></span></div>
+        <div class="settings-progress-lbl">réussites dans le cycle actuel</div>
         <button class="settings-reset-btn" onclick="resetGiftProgress()">Remettre à zéro</button>
       </div>
     </div>
     <div class="settings-section">
-      <h3>Cadeau toutes les … réussites</h3>
-      <div class="freq-grid" id="sett-freq-grid"></div>
+      <h3>Cadeaux &amp; paliers</h3>
+      <div id="sett-steps-list"></div>
     </div>
     <div class="settings-section">
-      <h3>Types de cadeaux</h3>
-      <div class="gift-toggle-list" id="sett-gift-list"></div>
+      <h3>Ajouter un cadeau</h3>
+      <div class="gift-add-form">
+        <div class="gift-add-row1">
+          <input class="gift-input-emoji" id="add-gift-emoji" type="text" maxlength="2" placeholder="🎁">
+          <input class="gift-input-label" id="add-gift-label" type="text" maxlength="30" placeholder="Ex : Un bonbon">
+        </div>
+        <div class="gift-add-row2">
+          <span class="gift-add-after">Après</span>
+          <input class="gift-input-num" id="add-gift-num" type="number" min="1" max="999" placeholder="10">
+          <span class="gift-add-unit">réussites</span>
+          <button class="gift-add-btn" onclick="addGiftStep()">+ Ajouter</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
