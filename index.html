@@ -3301,16 +3301,18 @@ function speak(text, rate = 0.78, pitch = 1.25, _force = false) {
   } catch(e) {}
 }
 
-/* Joue plusieurs messages à la suite sans se couper */
+/* Joue plusieurs messages à la suite sans se couper.
+   Chaque item peut avoir un callback onStart() déclenché au début de la parole. */
 function speakSeq(items, onDone) {
   if (!synth || giftShowing) { if (onDone) onDone(); return; }
   synth.cancel();
   function next(i) {
     if (i >= items.length) { if (onDone) onDone(); return; }
-    const { text, rate = 0.78, pitch = 1.25 } = items[i];
+    const { text, rate = 0.78, pitch = 1.25, onStart } = items[i];
     const u = new SpeechSynthesisUtterance(text);
     u.lang = 'fr-FR'; u.rate = rate; u.pitch = pitch; u.volume = 1;
     if (frVoice) u.voice = frVoice;
+    if (onStart) onStart();
     u.onend  = () => next(i + 1);
     u.onerror = () => next(i + 1);
     synth.speak(u);
@@ -4423,23 +4425,22 @@ function newCountingRound() {
   wraps.sort((a, b) => parseFloat(a.style.left) - parseFloat(b.style.left));
 
   // Compte à voix haute avec highlight de chaque ballon (gauche → droite)
-  let delay = 900;
-  speak('Comptons !', 0.8, 1.2);
+  const countSeq = [{ text: 'Comptons !', rate: 0.8, pitch: 1.2 }];
   for (let i = 0; i < countingN; i++) {
     const idx = i;
-    setTimeout(() => {
-      wraps[idx].classList.add('counting-pulse');
-      setTimeout(() => wraps[idx].classList.remove('counting-pulse'), 480);
-      speak(NUMBERS[idx].spoken, 0.7, 1.35);
-    }, delay);
-    delay += 950;
+    countSeq.push({
+      text: NUMBERS[idx].spoken,
+      rate: 0.68, pitch: 1.35,
+      onStart: () => {
+        wraps[idx].classList.add('counting-pulse');
+        setTimeout(() => wraps[idx].classList.remove('counting-pulse'), 700);
+      }
+    });
   }
-
-  // Question + cartes réponses
-  setTimeout(() => {
+  speakSeq(countSeq, () => {
     speak('Combien de ballons ?', 0.75, 1.2);
     setTimeout(showAnswerCards, 900);
-  }, delay + 150);
+  });
 }
 
 function showAnswerCards() {
