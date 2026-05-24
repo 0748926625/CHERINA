@@ -5428,8 +5428,7 @@ function onMatchTap(idx) {
       speakSeq([
         { text: fixSpokenFr(first.spoken), rate: 0.75, pitch: 1.2  },
         { text: pickBravo(),               rate: 0.75, pitch: 1.35 },
-        { text: 'Bravo ! Tu as tout associé !', rate: 0.75, pitch: 1.2 },
-      ], () => setTimeout(nextMatchRound, 500));
+      ], () => setTimeout(nextMatchRound, 400));
     } else {
       speakSeq([
         { text: fixSpokenFr(first.spoken), rate: 0.75, pitch: 1.2  },
